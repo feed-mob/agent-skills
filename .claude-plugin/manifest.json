@@ -9,6 +9,11 @@
       "name": "feedmob-brand-guidelines",
       "description": "Generate FeedMob-branded content including reports, presentations, charts, and artifacts following official brand guidelines. Use when creating any FeedMob-branded materials.",
       "path": "skills/feedmob-brand-guidelines"
+    },
+    {
+      "name": "feedmob-presentations",
+      "description": "Create, edit, and analyze PowerPoint presentations with professional styling, themes, and layouts. Supports python-pptx for creation and OOXML manipulation for advanced editing.",
+      "path": "skills/feedmob-presentations"
     }
   ]
 }
