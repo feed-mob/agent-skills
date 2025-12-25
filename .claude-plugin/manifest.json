@@ -14,6 +14,11 @@
       "name": "feedmob-presentations",
       "description": "Create, edit, and analyze PowerPoint presentations with professional styling, themes, and layouts. Supports python-pptx for creation and OOXML manipulation for advanced editing.",
       "path": "skills/feedmob-presentations"
+    },
+    {
+      "name": "url-parameter-parser",
+      "description": "Parse URLs in CSV files and extract query parameters as new columns. Use when working with CSV files containing URLs that need parameter extraction and analysis.",
+      "path": "skills/url-parameter-parser"
     }
   ]
 }
