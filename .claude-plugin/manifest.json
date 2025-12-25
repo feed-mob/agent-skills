@@ -4,5 +4,11 @@
   "description": "A collection of skills for agents",
   "author": "FeedMob",
   "type": "skill-collection",
-  "skills": []
+  "skills": [
+    {
+      "name": "feedmob-brand-guidelines",
+      "description": "Generate FeedMob-branded content including reports, presentations, charts, and artifacts following official brand guidelines. Use when creating any FeedMob-branded materials.",
+      "path": "skills/feedmob-brand-guidelines"
+    }
+  ]
 }
