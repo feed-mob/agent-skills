@@ -19,6 +19,11 @@
       "name": "url-parameter-parser",
       "description": "Parse URLs in CSV files and extract query parameters as new columns. Use when working with CSV files containing URLs that need parameter extraction and analysis.",
       "path": "skills/url-parameter-parser"
+    },
+    {
+      "name": "ai-news-daily",
+      "description": "Automatically fetch and summarize the latest AI news, research, and industry developments. Use when users request: (1) Daily AI news updates, (2) Latest AI technology developments, (3) Recent AI research papers or breakthroughs, (4) AI industry trends and market news, (5) Specific AI company announcements, or (6) Automated daily AI briefings. Supports customizable search queries, multi-source aggregation, and formatted output in various styles.",
+      "path": "skills/ai-news-daily"
     }
   ]
 }
