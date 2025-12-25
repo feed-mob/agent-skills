@@ -1,7 +1,7 @@
 {
-  "name": "agent-skills",
+  "name": "feedmob-agent-skills",
   "version": "1.0.0",
-  "description": "A collection of skills for Claude agents",
+  "description": "A collection of skills for agents",
   "author": "FeedMob",
   "type": "skill-collection",
   "skills": []
