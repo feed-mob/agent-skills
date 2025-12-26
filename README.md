@@ -50,7 +50,7 @@ description: A clear description of what this skill does and when to use it
 Register the repository as a marketplace plugin and install skills.
 
 ### Claude.ai
-Upload custom skills via the web interface (available to paid plans).
+To use any skill from this repository or upload custom skills, follow the instructions in [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude#h_a4222fa77b).
 
 ### Claude API
 Use pre-built or custom skills via the API. See the [Skills API documentation](https://docs.claude.com/en/api/skills-guide#creating-a-skill).
