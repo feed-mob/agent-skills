@@ -5,7 +5,6 @@ import sys
 from google import genai
 
 from common import (
-    ASPECT_RATIOS,
     IMAGE_SIZES,
     MODEL_MAP,
     build_config,
@@ -29,12 +28,24 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Overlay a logo onto a base image.")
     parser.add_argument("--base", required=True, help="Base image path or URL.")
     parser.add_argument("--logo", required=True, help="Logo image path or URL.")
-    parser.add_argument("--prompt", default=DEFAULT_PROMPT, help="Prompt override for logo placement.")
-    parser.add_argument("--aspect", default="9:16", help="Aspect ratio (e.g., 9:16, 16:9).")
-    parser.add_argument("--count", type=int, default=1, help="Number of images to generate (max 3).")
-    parser.add_argument("--model", choices=MODEL_MAP.keys(), default="pro", help="Model: flash or pro.")
-    parser.add_argument("--size", choices=sorted(IMAGE_SIZES), help="Image size (Pro only): 1K, 2K, 4K.")
-    parser.add_argument("--out-dir", default="outputs", help="Output directory for images.")
+    parser.add_argument(
+        "--prompt", default=DEFAULT_PROMPT, help="Prompt override for logo placement."
+    )
+    parser.add_argument(
+        "--aspect", default="9:16", help="Aspect ratio (e.g., 9:16, 16:9)."
+    )
+    parser.add_argument(
+        "--count", type=int, default=1, help="Number of images to generate (max 3)."
+    )
+    parser.add_argument(
+        "--model", choices=MODEL_MAP.keys(), default="pro", help="Model: flash or pro."
+    )
+    parser.add_argument(
+        "--size", choices=sorted(IMAGE_SIZES), help="Image size (Pro only): 1K, 2K, 4K."
+    )
+    parser.add_argument(
+        "--out-dir", default="outputs", help="Output directory for images."
+    )
     return parser.parse_args()
 
 
@@ -61,7 +72,9 @@ def main() -> int:
         force_pro=True,
         reference_count=0,
     )
-    config = build_config(args.aspect, model, size, response_modalities=["TEXT", "IMAGE"])
+    config = build_config(
+        args.aspect, model, size, response_modalities=["TEXT", "IMAGE"]
+    )
 
     client = genai.Client()
     timestamp = make_timestamp_prefix()

@@ -5,7 +5,6 @@ import sys
 from google import genai
 
 from common import (
-    ASPECT_RATIOS,
     IMAGE_SIZES,
     MODEL_MAP,
     build_config,
@@ -18,13 +17,30 @@ from common import (
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate images with Gemini Nano Banana.")
-    parser.add_argument("--prompt", required=True, help="Text prompt for image generation.")
-    parser.add_argument("--aspect", default="9:16", help="Aspect ratio (e.g., 9:16, 16:9).")
-    parser.add_argument("--count", type=int, default=1, help="Number of images to generate (max 3).")
-    parser.add_argument("--model", choices=MODEL_MAP.keys(), default="flash", help="Model: flash or pro.")
-    parser.add_argument("--size", choices=sorted(IMAGE_SIZES), help="Image size (Pro only): 1K, 2K, 4K.")
-    parser.add_argument("--out-dir", default="outputs", help="Output directory for images.")
+    parser = argparse.ArgumentParser(
+        description="Generate images with Gemini Nano Banana."
+    )
+    parser.add_argument(
+        "--prompt", required=True, help="Text prompt for image generation."
+    )
+    parser.add_argument(
+        "--aspect", default="9:16", help="Aspect ratio (e.g., 9:16, 16:9)."
+    )
+    parser.add_argument(
+        "--count", type=int, default=1, help="Number of images to generate (max 3)."
+    )
+    parser.add_argument(
+        "--model",
+        choices=MODEL_MAP.keys(),
+        default="flash",
+        help="Model: flash or pro.",
+    )
+    parser.add_argument(
+        "--size", choices=sorted(IMAGE_SIZES), help="Image size (Pro only): 1K, 2K, 4K."
+    )
+    parser.add_argument(
+        "--out-dir", default="outputs", help="Output directory for images."
+    )
     return parser.parse_args()
 
 
