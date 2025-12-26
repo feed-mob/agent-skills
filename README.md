@@ -47,7 +47,24 @@ description: A clear description of what this skill does and when to use it
 ## Using Skills
 
 ### Claude Code
-Register the repository as a marketplace plugin and install skills.
+You can register this repository as a Claude Code Plugin marketplace by running the following command in Claude Code:
+```
+/plugin marketplace add feed-mob/agent-skills
+```
+
+Then, to install a specific set of skills:
+1. Select `Browse and install plugins`
+2. Select `feedmob-agent-skills`
+3. Select `feedmob-content-tools` or `data-processing-tools`
+4. Select `Install now`
+
+Alternatively, directly install either Plugin via:
+```
+/plugin install feedmob-content-tools@feedmob-agent-skills
+/plugin install data-processing-tools@feedmob-agent-skills
+```
+
+After installing the plugin, you can use the skill by just mentioning it.
 
 ### Claude.ai
 To use any skill from this repository or upload custom skills, follow the instructions in [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude#h_a4222fa77b).
