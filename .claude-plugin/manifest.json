@@ -24,6 +24,11 @@
       "name": "ai-news-daily",
       "description": "Automatically fetch and summarize the latest AI news, research, and industry developments. Use when users request: (1) Daily AI news updates, (2) Latest AI technology developments, (3) Recent AI research papers or breakthroughs, (4) AI industry trends and market news, (5) Specific AI company announcements, or (6) Automated daily AI briefings. Supports customizable search queries, multi-source aggregation, and formatted output in various styles.",
       "path": "skills/ai-news-daily"
+    },
+    {
+      "name": "gemini-image-generator",
+      "description": "Generate, edit, or transform images with Gemini using bundled Python scripts (Flash or Pro) including aspect ratio, resolution, image-to-image edits, logo overlays, and reference images. Use when users request image generation, image edits, image-to-image transformations, logo placement, or specific aspect ratios or resolutions.",
+      "path": "skills/gemini-image-generator"
     }
   ]
 }
