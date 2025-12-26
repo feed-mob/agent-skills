@@ -1,0 +1,41 @@
+{
+  "name": "feedmob-agent-skills",
+  "owner": {
+    "name": "FeedMob Inc.",
+    "email": "dev@feedmob.com"
+  },
+  "metadata": {
+    "description": "A collection of specialized skills for Claude agents to perform FeedMob-related tasks",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "feedmob-content-tools",
+      "description": "FeedMob content creation tools including brand guidelines and presentation generation",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/feedmob-brand-guidelines",
+        "./skills/feedmob-presentations"
+      ]
+    },
+    {
+      "name": "data-processing-tools",
+      "description": "Data processing utilities for URL parsing and analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/url-parameter-parser"
+      ]
+    },
+    {
+      "name": "ai-news-tools",
+      "description": "AI news aggregation and summarization tools for staying updated with the latest AI developments",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/ai-news-daily"
+      ]
+    }
+  ]
+}
