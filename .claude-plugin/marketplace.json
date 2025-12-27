@@ -36,6 +36,15 @@
       "skills": [
         "./skills/ai-news-daily"
       ]
+    },
+    {
+      "name": "image-generation-tools",
+      "description": "Image generation and editing tools",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/gemini-image-generator"
+      ]
     }
   ]
 }
