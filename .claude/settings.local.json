@@ -6,7 +6,10 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebSearch",
-      "Skill(ai-news-tools:ai-news-daily)"
+      "Skill(ai-news-tools:ai-news-daily)",
+      "Bash(source:*)",
+      "Bash(nvm current:*)",
+      "Bash(node:*)"
     ]
   }
 }

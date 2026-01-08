@@ -21,11 +21,12 @@
     },
     {
       "name": "data-processing-tools",
-      "description": "Data processing utilities for URL parsing and analysis",
+      "description": "Data processing utilities for URL parsing, analysis, and Chime MTD performance tracking",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/url-parameter-parser"
+        "./skills/url-parameter-parser",
+        "./skills/create-chime-mtd-performance"
       ]
     },
     {

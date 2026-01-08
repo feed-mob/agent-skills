@@ -29,6 +29,11 @@
       "name": "gemini-image-generator",
       "description": "Generate, edit, or transform images with Gemini using bundled Python scripts (Flash or Pro) including aspect ratio, resolution, image-to-image edits, logo overlays, and reference images. Use when users request image generation, image edits, image-to-image transformations, logo placement, or specific aspect ratios or resolutions.",
       "path": "skills/gemini-image-generator"
+    },
+    {
+      "name": "create-chime-mtd-performance",
+      "description": "Automated MTD Performance data block creation in Chime Internal Pacing Sheet. Asks user for block size, duplicates the top data block, and updates date ranges. Use at the start of new tracking periods for fast, accurate updates.",
+      "path": "skills/create-chime-mtd-performance"
     }
   ]
 }
