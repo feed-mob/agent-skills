@@ -53,7 +53,8 @@
       "strict": false,
       "skills": [
         "./skills/civitai-analyst"
-      ]
+      ],
+      "mcpServers": "./skills/civitai-analyst/.mcp.json"
     }
   ]
 }
