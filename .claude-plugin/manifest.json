@@ -29,6 +29,11 @@
       "name": "gemini-image-generator",
       "description": "Generate, edit, or transform images with Gemini using bundled Python scripts (Flash or Pro) including aspect ratio, resolution, image-to-image edits, logo overlays, and reference images. Use when users request image generation, image edits, image-to-image transformations, logo placement, or specific aspect ratios or resolutions.",
       "path": "skills/gemini-image-generator"
+    },
+    {
+      "name": "civitai-analyst",
+      "description": "Generate and execute SQL queries against the civitai_records PostgreSQL database to analyze video performance on Civitai. Use when users ask about video engagement metrics, content performance analysis, tag/theme analysis, quality scores, weekly reports, comparing videos, or content recommendations.",
+      "path": "skills/civitai-analyst"
     }
   ]
 }

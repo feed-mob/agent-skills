@@ -45,6 +45,16 @@
       "skills": [
         "./skills/gemini-image-generator"
       ]
+    },
+    {
+      "name": "civitai-analytics-tools",
+      "description": "Civitai video performance analytics and SQL query generation tools",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/civitai-analyst"
+      ],
+      "mcpServers": "./skills/civitai-analyst/.mcp.json"
     }
   ]
 }
