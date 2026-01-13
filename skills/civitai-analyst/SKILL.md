@@ -10,7 +10,7 @@ Analyze video performance data on Civitai through natural language queries. Gene
 ## Capabilities
 
 1. **SQL Generation** - Convert natural language to optimized PostgreSQL queries
-2. **Query Execution** - Run queries via `Call_civitai_records__execute_sql_`
+2. **Query Execution** - Run queries via `query_civitai_db`
 3. **Data Analysis** - Interpret engagement metrics and find patterns
 4. **Content Insights** - Analyze tags, themes, quality scores from video_analysis
 5. **Recommendations** - Suggest content strategies based on performance data
@@ -21,7 +21,7 @@ Analyze video performance data on Civitai through natural language queries. Gene
 Execute SQL using the MCP tool:
 
 ```
-Call_civitai_records__execute_sql_(sql="SELECT ...")
+query_civitai_db(sql="SELECT ...")
 ```
 
 **Error Handling:** If query is rejected, response contains:
