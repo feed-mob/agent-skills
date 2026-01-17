@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "feedmob-reporting": {
+      "comment": "This skill provides workflows for feedmob-reporting MCP server",
+      "tools": [
+        "mcp__feedmob-reporting__get_possible_finance_singular_reports",
+        "mcp__feedmob-reporting__get_textnow_adjust_reports",
+        "mcp__feedmob-reporting__get_appsflyer_reports",
+        "mcp__feedmob-reporting__get_direct_spends",
+        "mcp__feedmob-reporting__get_click_url_histories",
+        "mcp__feedmob-reporting__get_adops_reports"
+      ]
+    }
+  }
+}

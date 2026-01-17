@@ -39,6 +39,11 @@
       "name": "feedmob-campaign-creator",
       "description": "Create FeedMob campaigns with guided workflow. Use when users request campaign creation, link generation, or new partner launches. Handles: (1) Campaign naming via feedmob-campaign-naming, (2) Client data retrieval, (3) App selection, (4) Campaign preview, (5) Campaign creation. Trigger keywords: create campaign, new campaign, generate campaign, campaign setup, link generation, partner launch, media plan campaign.",
       "path": "skills/feedmob-campaign-creator"
+    },
+    {
+      "name": "feedmob-reporting-skills",
+      "description": "FeedMob reporting analysis and data verification workflows using feedmob-reporting MCP tools. Use when checking spend data, comparing reports, analyzing Possible Finance metrics, verifying InMobi data, or performing any FeedMob reporting tasks that involve Singular reports, AppsFlyer data, direct spend validation, or gross spend calculations.",
+      "path": "skills/feedmob-reporting-skills"
     }
   ]
 }

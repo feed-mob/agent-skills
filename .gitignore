@@ -30,6 +30,7 @@ dist/
 Thumbs.db
 
 # Temporary files
+tmp/
 *.tmp
 .cache/
 .opencode/
@@ -42,3 +43,8 @@ __pycache__/
 .Python
 venv/
 env/
+
+# planning-with-files
+findings.md
+progress.md
+task_plan.md
