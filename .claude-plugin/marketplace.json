@@ -55,6 +55,15 @@
          "./skills/civitai-analyst"
        ],
        "mcpServers": "./skills/civitai-analyst/mcporter.json"
-     }
-   ]
+     },
+    {
+      "name": "feedmob-campaign-creator",
+      "description": "FeedMob campaign creation and management tools for setting up campaigns, tracking links, and partner integrations",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/feedmob-campaign-creator"
+      ]
+    }
+  ]
 }
