@@ -113,7 +113,7 @@ ls /tmp/feedmob-skills/skills/weekly-hubspot-report
 ls /tmp/feedmob-skills/skills/weekly-hubspot-report-pipeline
 ```
 
-If extraction or verification fails, share the error and refer to [references/troubleshooting.md](references/troubleshooting.md).
+If extraction or verification fails, share the error and use the `Quick Reference -> Troubleshooting Checklist` section in this file.
 
 ### Step 3: Install Skills Using npx
 
@@ -185,7 +185,7 @@ Capture the error output and check for common issues:
 - Conflicting skill versions
 - npx not found (install Node.js)
 
-Show error to user and refer to [references/troubleshooting.md](references/troubleshooting.md).
+Show error to user and use the troubleshooting checklist in this file.
 
 ### Step 4: Check Current Environment Setup
 
@@ -220,7 +220,7 @@ Explain what environment variables are needed and what they're for:
 
 ### Step 6: Guide User Through Environment Variable Setup
 
-For each missing or needed environment variable, provide step-by-step instructions. Use the comprehensive guide from [references/environment-setup.md](references/environment-setup.md).
+For each missing or needed environment variable, provide step-by-step instructions using the setup guidance in this file.
 
 **Interactive approach:**
 
@@ -292,7 +292,7 @@ After the user has configured their environment variables, guide them to verify:
 
 **If no:**
 - Ask which variables are still missing
-- Provide troubleshooting help from [references/troubleshooting.md](references/troubleshooting.md)
+- Provide troubleshooting help using this file's verification and troubleshooting notes
 
 **If yes:**
 - Congratulate and move to next step
@@ -312,7 +312,7 @@ Once environment variables are set, guide the user to test:
 >
 > **If you encounter errors:**
 > - Check the error message for which variable is missing
-> - See troubleshooting guide: [references/troubleshooting.md](references/troubleshooting.md)
+> - Re-check troubleshooting notes in this skill (install errors, env var checks, and session reload)
 > - Verify variables are loaded in current session with presence checks (no token output)
 >
 > Would you like to try generating a report now?
@@ -371,19 +371,39 @@ WEEKLY_HUBSPOT_REPORT__AWS_REGION=us-west-2
 echo "AWS_REGION: ${WEEKLY_HUBSPOT_REPORT__AWS_REGION:-us-west-2 (default)}"
 ```
 
+### Troubleshooting Checklist
+
+```bash
+# 1) unzip missing
+unzip -v
+# If missing: install with your OS package manager
+
+# 2) zip extraction path check
+ls -la /tmp | grep feedmob-skills
+ls -la /tmp/feedmob-skills/skills/
+
+# 3) npx missing
+npx --version
+# If missing: install Node.js (includes npx)
+
+# 4) skill paths missing in repo
+ls -la /tmp/feedmob-skills/skills/weekly-hubspot-report
+ls -la /tmp/feedmob-skills/skills/weekly-hubspot-report-pipeline
+
+# 5) reinstall with explicit agent
+AGENT_NAME="opencode"  # or codex / claude-code / openclaw
+npx skills add /tmp/feedmob-skills --skill weekly-hubspot-report-pipeline --agent "$AGENT_NAME" -y
+npx skills add /tmp/feedmob-skills --skill weekly-hubspot-report --agent "$AGENT_NAME" -y
+```
+
+If permissions fail, ensure your agent skills directory is writable for the current user and rerun the install commands.
+
 ### Getting Token Values
 
 Contact your FeedMob team administrator to obtain:
 - FEMINI_API_TOKEN
 - FEEDAI_API_TOKEN
 - AWS credentials (Access Key ID, Secret Access Key, S3 Bucket name)
-
-### Additional Resources
-
-For detailed setup instructions and troubleshooting:
-
-- **[Environment Setup Guide](references/environment-setup.md)** - Complete instructions for setting up all environment variables
-- **[Troubleshooting Guide](references/troubleshooting.md)** - Common issues and solutions
 
 ## Notes
 
