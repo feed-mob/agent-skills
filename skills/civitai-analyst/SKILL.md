@@ -1,6 +1,6 @@
----
 name: civitai-analyst
 description: "Generate and execute SQL queries against the civitai_records PostgreSQL database to analyze video performance on Civitai. Use when users ask about: video engagement metrics (likes, hearts, comments), content performance analysis, tag/theme analysis, quality scores, weekly reports, comparing videos, content recommendations, trend analysis, or any Civitai data queries. Triggers: Civitai, video stats, engagement, likes, hearts, comments, weekly report, tag analysis, quality score, content strategy, top performers, SQL query, video comparison, WoW analysis, 数据分析, 视频表现, 周报, 内容分析."
+metadata: {"openclaw":{"requires":{"bins":["npx"],"env":["CIVITAI_RECORD_MCP_SERVER_TOKEN"]}}}
 ---
 
 # Civitai Analyst
@@ -16,13 +16,37 @@ Analyze video performance data on Civitai through natural language queries. Gene
 5. **Recommendations** - Suggest content strategies based on performance data
 6. **Weekly Reports** - Generate JSON/HTML performance summaries
 
+## mcporter Setup
+
+1. Export the required token and point mcporter at this skill's config:
+
+```bash
+export CIVITAI_RECORD_MCP_SERVER_TOKEN="<token>"
+export MCPORTER_CONFIG="${SKILL_DIR}/mcporter.json"
+```
+
+2. Optional validation commands:
+
+```bash
+test -f "${MCPORTER_CONFIG}"
+npx mcporter list --config "${MCPORTER_CONFIG}"
+npx mcporter list civitai_records --config "${MCPORTER_CONFIG}"
+```
+
 ## Tool Usage
 
-Execute SQL using the MCP tool:
+Execute SQL with mcporter so every query is auditable and consistently configured:
 
 ```
-query_civitai_db(sql="SELECT ...")
+npx mcporter call civitai_records.query_civitai_db \
+  --config "${MCPORTER_CONFIG}" --output json \
+  sql="SELECT ..."
 ```
+
+Rules:
+1. Always include `--output json`
+2. Pass SQL as a single string. For multi-line queries use `sql=$(cat <<'SQL' ... SQL)`
+3. Surface mcporter errors directly—most rejections return JSON with details
 
 **Error Handling:** If query is rejected, response contains:
 ```json
@@ -40,7 +64,7 @@ Fix the SQL based on the error and retry.
 
 1. **Understand** - Parse user's question, identify metrics/filters needed
 2. **Generate SQL** - Use schema.md for tables, query-index.md for templates
-3. **Execute** - Call the SQL tool, handle errors
+3. **Execute** - Run `npx mcporter call civitai_records.query_civitai_db` with validated SQL
 4. **Analyze** - Interpret results, find patterns, compare data points
 5. **Present** - Format with links, provide insights and recommendations
 
