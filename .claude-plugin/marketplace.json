@@ -51,10 +51,10 @@
       "description": "Civitai video performance analytics and SQL query generation tools",
       "source": "./",
       "strict": false,
-      "skills": [
-        "./skills/civitai-analyst"
-      ],
-      "mcpServers": "./skills/civitai-analyst/.mcp.json"
-    }
-  ]
+       "skills": [
+         "./skills/civitai-analyst"
+       ],
+       "mcpServers": "./skills/civitai-analyst/mcporter.json"
+     }
+   ]
 }
