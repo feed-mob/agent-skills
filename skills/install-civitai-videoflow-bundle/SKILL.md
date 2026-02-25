@@ -246,6 +246,16 @@ $VF start test-run "simple cinematic scene" --no-enhance
 
 If they use OpenCode commands, they can run `/videoflow-generate "prompt"` after setup.
 
+### Step 7: Provide the Run Prompt Template
+
+After successful installation and verification, share this exact prompt so the user can execute the full flow correctly:
+
+```text
+Use civitai-videoflow skill to run the full video generation pipeline and publish to Civitai.
+
+Prompt: $ARGUMENTS
+```
+
 ## Quick Reference
 
 ### Agent-Specific Install Commands
