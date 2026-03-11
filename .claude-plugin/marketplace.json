@@ -64,6 +64,15 @@
       "skills": [
         "./skills/feedmob-campaign-creator"
       ]
+    },
+    {
+      "name": "feedmob-reporting-skills",
+      "description": "FeedMob reporting analysis and data verification workflows for spend tracking, report comparison, and advertising platform data analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/feedmob-reporting-skills"
+      ]
     }
   ]
 }

@@ -1,0 +1,3 @@
+datafusion>=42.0.0
+pandas>=2.0.0
+pyarrow>=14.0.0
