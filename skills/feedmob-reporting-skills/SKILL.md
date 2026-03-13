@@ -1,6 +1,6 @@
 ---
 name: feedmob-reporting-skills
-description: "MUST use this skill when using mcp__feedmob-reporting__* tools. Provides structured workflows for FeedMob reporting analysis. Key: All clients (Possible Finance, TextNow, AppsFlyer MMP, etc.) use client_paid_action_count × gross_cpi (dynamic event field based on client_paid_action in click_url_histories). Critical for ensuring correct multi-step workflows and accurate data reconciliation. Trigger words: any feedmob-reporting MCP tool usage, Possible Finance, TextNow, AppsFlyer, Singular reports, Adjust reports, direct spend, gross spend verification, spend reconciliation, client_paid_action."
+description: "MUST use this skill when using mcp__feedmob-reporting__* tools. Provides structured workflows for FeedMob reporting analysis. Key: All clients (Possible Finance, Koho Financial, TextNow, AppsFlyer MMP, etc.) use client_paid_action_count × gross_cpi (dynamic event field based on client_paid_action in click_url_histories). Critical for ensuring correct multi-step workflows and accurate data reconciliation. Trigger words: any feedmob-reporting MCP tool usage, Possible Finance, Koho Financial, TextNow, AppsFlyer, Singular reports, Adjust reports, direct spend, gross spend verification, spend reconciliation, client_paid_action."
 ---
 
 # FeedMob Reporting Skills
@@ -32,7 +32,7 @@ Complete anti-hallucination rules, verification checklist, and examples in [refe
 
 ## Overview
 
-This skill provides structured workflows for FeedMob reporting tasks using feedmob-reporting MCP tools. Includes processes for Possible Finance spend verification, TextNow Adjust report analysis, AppsFlyer MMP clients, and cross-platform spend reconciliation.
+This skill provides structured workflows for FeedMob reporting tasks using feedmob-reporting MCP tools. Includes processes for Possible Finance, Koho Financial spend verification, TextNow Adjust report analysis, AppsFlyer MMP clients, and cross-platform spend reconciliation.
 
 ## Important: MCP Tool Usage
 
@@ -87,9 +87,10 @@ Compare attribution reports (Singular/Adjust/etc.) with direct spend data to ide
 
 **Applicable Clients:**
 - ✅ Possible Finance (Singular reports)
+- ✅ Koho Financial (Singular reports)
 - ✅ TextNow (Adjust reports)
-- ✅ Privacy Hawk (Singular reports)
-- ✅ Uber Technologies (Agency Conversion Records)
+- ✅ Privacy Hawk (Singularreports)
+- ✅ Uber Technologies (AgencyConversionRecords)
 - ✅ AppsFlyer MMP clients (universal AppsFlyer reports)
 - ✅ Any future clients
 
@@ -101,6 +102,7 @@ Compare attribution reports (Singular/Adjust/etc.) with direct spend data to ide
 
 **Choose tool based on client:**
 - Possible Finance → `get_possible_finance_singular_reports`
+- Koho Financial → `get_koho_financial_singular_reports`
 - TextNow → `get_textnow_adjust_reports`
 - Privacy Hawk → `get_privacy_hawk_singular_reports`
 - Uber Technologies → See [Uber Workflow](references/uber-workflow.md)

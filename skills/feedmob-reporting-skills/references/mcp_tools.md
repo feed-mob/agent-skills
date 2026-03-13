@@ -9,6 +9,7 @@ API reference for all feedmob-reporting MCP tools.
 | Tool | Parameter | Type | Format |
 |------|-----------|------|--------|
 | get_possible_finance_singular_reports | start_date, end_date | string | "YYYY-MM-DD" |
+| get_koho_financial_singular_reports | start_date, end_date | string | "YYYY-MM-DD" |
 | get_textnow_adjust_reports | start_date, end_date | string | "YYYY-MM-DD" |
 | get_click_url_histories | click_url_ids | number[] | [12345, 12346] |
 | get_click_url_histories | start_date | string | "YYYY-MM-DD" |
@@ -21,10 +22,11 @@ API reference for all feedmob-reporting MCP tools.
 ## Table of Contents
 
 1. [Possible Finance Tools](#possible-finance-tools)
-2. [TextNow Tools](#textnow-tools)
-3. [AppsFlyer Tools](#appsflyer-tools)
-4. [Direct Spend Tools](#direct-spend-tools)
-5. [AdOps Tools](#adops-tools)
+2. [Koho Financial Tools](#koho-financial-tools)
+3. [TextNow Tools](#textnow-tools)
+4. [AppsFlyer Tools](#appsflyer-tools)
+5. [Direct Spend Tools](#direct-spend-tools)
+6. [AdOps Tools](#adops-tools)
 
 ---
 
@@ -60,6 +62,48 @@ mcp__feedmob-reporting__get_possible_finance_singular_reports({
 
 **Common Use Cases:**
 - Daily spend reconciliation for Possible Finance campaigns
+- Conversion event tracking (tutorial, registration, install, etc.)
+- Campaign performance analysis
+
+**Important Notes:**
+- **DO NOT assume any specific event is the conversion event** - the correct field is determined by `client_paid_action` from click_url_histories
+- Different campaigns may use different conversion events (tutorial, registration, install, etc.)
+- Always check `client_paid_action` first to know which event count to use for spend calculation
+
+---
+
+## Koho Financial Tools
+
+### get_koho_financial_singular_reports
+
+Fetches Koho Financial Singular API reports for a specified date range.
+
+**Parameters:**
+- `start_date` (string, required): Start date in YYYY-MM-DD format
+- `end_date` (string, required): End date in YYYY-MM-DD format
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - **Event counts** (which one to use is determined by `client_paid_action` from click_url_histories):
+    - `tutorial`: Number of tutorial completions
+    - `registration`: Number of registrations
+    - `install`: Number of installs
+    - Other conversion events
+  - `app_id`: Application identifier
+  - `campaign_name`: Campaign name
+  - Other Singular metrics
+
+**Example:**
+```javascript
+mcp__feedmob-reporting__get_koho_financial_singular_reports({
+  start_date: "2025-01-15",
+  end_date: "2025-01-15"
+})
+```
+
+**Common Use Cases:**
+- Daily spend reconciliation for Koho Financial campaigns
 - Conversion event tracking (tutorial, registration, install, etc.)
 - Campaign performance analysis
 

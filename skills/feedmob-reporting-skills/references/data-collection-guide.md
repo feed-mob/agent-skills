@@ -14,6 +14,14 @@ mcp__feedmob-reporting__get_possible_finance_singular_reports({
 })
 ```
 
+**Koho Financial (Singular):**
+```
+mcp__feedmob-reporting__get_koho_financial_singular_reports({
+  start_date: "YYYY-MM-DD",
+  end_date: "YYYY-MM-DD"
+})
+```
+
 **TextNow (Adjust):**
 ```
 mcp__feedmob-reporting__get_textnow_adjust_reports({
