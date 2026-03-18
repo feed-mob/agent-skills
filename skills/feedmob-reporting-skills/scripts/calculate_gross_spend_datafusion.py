@@ -258,7 +258,7 @@ ORDER BY c.date, c.click_url_id
     return pandas_df
 
 
-def generate_summary(df):
+def generate_summary(df, diagnostics=None):
     """Generate summary statistics"""
     total_calculated = df['calculated_gross_spend'].sum()
     total_direct = df['direct_gross_spend'].sum()
@@ -272,12 +272,13 @@ def generate_summary(df):
         'total_diff': total_diff,
         'total_diff_pct': total_diff_pct,
         'total_events': int(total_events),
-        'row_count': len(df)
+        'row_count': len(df),
+        'diagnostics': diagnostics or {}
     }
 
 
-def print_summary(summary, available_events):
-    """Print summary report"""
+def print_summary(summary, available_events, diagnostics=None):
+    """Print summary report with diagnostics"""
     print("\n" + "="*60)
     print("Summary Report")
     print("="*60)
@@ -289,7 +290,9 @@ def print_summary(summary, available_events):
 
     # Status
     abs_diff_pct = abs(summary['total_diff_pct'])
-    if abs_diff_pct < 1:
+    if summary['row_count'] == 0 or (summary['total_calculated'] == 0 and summary['total_direct'] == 0):
+        status = "⚠️  No Data to Compare"
+    elif abs_diff_pct < 1:
         status = "✅ Match"
     elif abs_diff_pct < 5:
         status = "⚠️  Minor Difference (<5%)"
@@ -303,6 +306,153 @@ def print_summary(summary, available_events):
     print(f"Available Event Columns: {', '.join(available_events)}")
     print()
 
+    # Print diagnostics if available
+    diagnostics = summary.get('diagnostics', {})
+    if diagnostics:
+        print("-"*60)
+        print("🔍 Diagnostics")
+        print("-"*60)
+
+        # Direct spend status
+        direct_spend_status = diagnostics.get('direct_spend_status', 'unknown')
+        if direct_spend_status == 'empty':
+            print("⚠️  Direct Spend: empty")
+        elif direct_spend_status == 'has_data':
+            print(f"✓ Direct Spend: {diagnostics.get('direct_spend_rows', 0)} records")
+
+        # Configured actions and their event counts
+        configured_actions = diagnostics.get('configured_actions', set())
+        actual_events = diagnostics.get('actual_events', {})
+
+        if configured_actions:
+            print()
+            empty_actions = []
+            has_data_actions = []
+
+            for action in sorted(configured_actions):
+                # Check if action matches an event column directly
+                count = actual_events.get(action, 0)
+                if count == 0:
+                    # Check if action maps to an event column (e.g., first_install -> install)
+                    for event_col in actual_events:
+                        if action.replace('first_', '') == event_col or event_col in action:
+                            count = actual_events[event_col]
+                            break
+
+                if count == 0:
+                    empty_actions.append(action)
+                else:
+                    has_data_actions.append((action, count))
+
+            if empty_actions:
+                print(f"⚠️  client_paid_action empty: {', '.join(empty_actions)}")
+            if has_data_actions:
+                for action, count in has_data_actions:
+                    print(f"✓ client_paid_action '{action}': {count} events")
+
+        # Show all actual events
+        if actual_events:
+            print()
+            print("📊 All events in attribution (with click_url_id):")
+            for event, count in sorted(actual_events.items(), key=lambda x: -x[1]):
+                print(f"    • {event}: {count}")
+
+        # Summary
+        if summary['row_count'] == 0 or summary['total_events'] == 0:
+            print()
+            print("💡 Summary:")
+            if direct_spend_status == 'empty':
+                print("    • Direct Spend: no data")
+            if configured_actions and empty_actions:
+                print(f"    • client_paid_action mismatch: configured actions have 0 matching events")
+
+        print()
+
+
+def create_empty_direct_spend_csv(output_path):
+    """Create an empty direct spend CSV with proper headers"""
+    headers = [
+        'feedmob_click_url_id', 'date', 'campaign_name',
+        'feedmob_net_spend', 'feedmob_gross_spend'
+    ]
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+
+
+def validate_and_prepare_direct_spend_csv(direct_spend_csv):
+    """Validate direct spend CSV, create empty one if missing or empty.
+    Returns: 'empty', 'has_data'"""
+    direct_spend_path = Path(direct_spend_csv)
+
+    # Case 1: File doesn't exist - create empty one
+    if not direct_spend_path.exists():
+        print(f"⚠️  Direct spend file not found, creating empty file: {direct_spend_csv}")
+        create_empty_direct_spend_csv(direct_spend_csv)
+        return 'empty'
+
+    # Case 2: File exists but is empty or has no data rows
+    with open(direct_spend_csv, 'r') as f:
+        content = f.read().strip()
+        if not content:
+            print(f"⚠️  Direct spend file is empty, adding headers: {direct_spend_csv}")
+            create_empty_direct_spend_csv(direct_spend_csv)
+            return 'empty'
+
+        lines = content.split('\n')
+        if len(lines) <= 1:
+            print(f"⚠️  Direct spend file has no data rows, using as-is: {direct_spend_csv}")
+            return 'empty'
+
+    print(f"✓ Direct spend file has {len(lines) - 1} data rows")
+    return 'has_data'
+
+
+def collect_diagnostics(attribution_csv, histories_csv, direct_spend_status, available_events):
+    """Collect diagnostic information for empty results"""
+    diagnostics = {
+        'direct_spend_status': direct_spend_status,
+        'configured_actions': set(),
+        'actual_events': {},
+        'event_match_issues': []
+    }
+
+    # Get configured client_paid_action from histories
+    try:
+        with open(histories_csv, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                action = row.get('client_paid_action', '')
+                if action:
+                    diagnostics['configured_actions'].add(action)
+    except Exception:
+        pass
+
+    # Get actual event counts from attribution (only rows with click_url_id)
+    try:
+        with open(attribution_csv, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                # Only count rows with valid click_url_id
+                click_url_id = row.get('click_url_id', '')
+                if click_url_id and click_url_id.strip():
+                    for col in available_events:
+                        try:
+                            val = int(float(row.get(col, 0) or 0))
+                            if val > 0:
+                                diagnostics['actual_events'][col] = diagnostics['actual_events'].get(col, 0) + val
+                        except (ValueError, TypeError):
+                            pass
+    except Exception:
+        pass
+
+    # Check for event match issues
+    for action in diagnostics['configured_actions']:
+        if action not in available_events and action != 'vendor_managed':
+            diagnostics['event_match_issues'].append(action)
+
+    return diagnostics
+
 
 def main():
     """Main function"""
@@ -315,14 +465,17 @@ def main():
     direct_spend_csv = sys.argv[3]
     output_csv = sys.argv[4]
 
-    # Validate input files
-    for filepath in [attribution_csv, histories_csv, direct_spend_csv]:
+    # Validate required input files (attribution and histories must exist)
+    print("Validating input files...")
+    for filepath in [attribution_csv, histories_csv]:
         if not Path(filepath).exists():
             print(f"✗ Error: File not found: {filepath}")
             sys.exit(1)
+    print("✓ Attribution report file exists")
+    print("✓ Histories file exists")
 
-    print("Validating input files...")
-    print("✓ All input files exist")
+    # Handle direct spend file (can be missing or empty)
+    direct_spend_status = validate_and_prepare_direct_spend_csv(direct_spend_csv)
     print()
 
     # Check and install dependencies
@@ -363,9 +516,14 @@ def main():
         print(f"✓ Report saved to: {output_csv}")
         print(f"✓ Processed {row_count} rows (including header)")
 
-        # Generate summary
-        summary = generate_summary(df)
-        print_summary(summary, available_events)
+        # Collect diagnostics for empty results
+        diagnostics = collect_diagnostics(
+            attribution_csv, histories_csv, direct_spend_status, available_events
+        )
+
+        # Generate summary with diagnostics
+        summary = generate_summary(df, diagnostics)
+        print_summary(summary, available_events, diagnostics)
 
         print("Done!")
 
