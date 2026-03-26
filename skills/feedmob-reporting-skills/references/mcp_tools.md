@@ -25,8 +25,9 @@ API reference for all feedmob-reporting MCP tools.
 2. [Koho Financial Tools](#koho-financial-tools)
 3. [TextNow Tools](#textnow-tools)
 4. [AppsFlyer Tools](#appsflyer-tools)
-5. [Direct Spend Tools](#direct-spend-tools)
-6. [AdOps Tools](#adops-tools)
+5. [Partner Reports (Net Spend)](#partner-reports-net-spend)
+6. [Direct Spend Tools](#direct-spend-tools)
+7. [AdOps Tools](#adops-tools)
 
 ---
 
@@ -293,6 +294,251 @@ mcp__feedmob-reporting__get_appsflyer_reports({
 ```
 
 **Note:** You can filter by either af_app_ids, click_url_ids, or fetch all data by omitting filters.
+
+---
+
+## Partner Reports (Net Spend)
+
+These tools fetch partner platform reports for net spend verification. Unlike gross spend verification (which requires calculation), net spend verification directly compares `partner_net_spend` vs `feedmob_net_spend`.
+
+### Partner Reports Overview
+
+| Partner | Tool | Workflow Type | client_id Required |
+|---------|------|---------------|-------------------|
+| Jampp | `get_jampp_reports` | Direct (1-step) | ✅ Yes |
+| Kayzen | `get_kayzen_reports` | Direct (1-step) | ❌ No |
+| YouAppi | `get_youappi_reports` | Direct (1-step) | ❌ No |
+| Samsung | `get_samsung_reports` | Direct (1-step) | ❌ No |
+| Smadex | `get_smadex_reports` | Multi-step | ❌ No |
+| InMobi | `get_inmobi_reports` | Multi-step | ❌ No |
+| Liftoff | `get_liftoff_reports` | Multi-step | ❌ No |
+
+**Unified Response Field:** All partner reports return `partner_net_spend` for net spend amount.
+
+---
+
+### get_jampp_reports
+
+Fetches Jampp report data for a specified date range.
+
+**Parameters:**
+- `client_id` (number, required): Client ID
+- `start_date` (string, required): Start date in YYYY-MM-DD format
+- `end_date` (string, required): End date in YYYY-MM-DD format
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from Jampp
+  - `date`: Report date
+  - Other Jampp-specific fields
+
+**Example:**
+```javascript
+mcp__feedmob-reporting__get_jampp_reports({
+  client_id: 123,
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Common Use Cases:**
+- Net spend verification for Jampp campaigns
+- Daily/weekly/monthly reconciliation
+- Campaign performance analysis
+
+---
+
+### get_kayzen_reports
+
+Fetches Kayzen report data for a specified date range.
+
+**Parameters:**
+- `start_date` (string, required): Start date in YYYY-MM-DD format
+- `end_date` (string, required): End date in YYYY-MM-DD format
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from Kayzen
+  - `date`: Report date
+  - Other Kayzen-specific fields
+
+**Example:**
+```javascript
+mcp__feedmob-reporting__get_kayzen_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+---
+
+### get_youappi_reports
+
+Fetches YouAppi report data for a specified date range.
+
+**Parameters:**
+- `start_date` (string, required): Start date in YYYY-MM-DD format
+- `end_date` (string, required): End date in YYYY-MM-DD format
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from YouAppi
+  - `date`: Report date
+  - Other YouAppi-specific fields
+
+**Example:**
+```javascript
+mcp__feedmob-reporting__get_youappi_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+---
+
+### get_samsung_reports
+
+Fetches Samsung report data for a specified date range.
+
+**Parameters:**
+- `start_date` (string, required): Start date in YYYY-MM-DD format
+- `end_date` (string, required): End date in YYYY-MM-DD format
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from Samsung
+  - `date`: Report date
+  - Other Samsung-specific fields
+
+**Example:**
+```javascript
+mcp__feedmob-reporting__get_samsung_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+---
+
+### get_smadex_reports (Multi-step)
+
+Fetches Smadex report data. Requires 3-step workflow.
+
+**Step 1: Get Report IDs**
+```javascript
+mcp__feedmob-reporting__get_smadex_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Step 2: Check Status (repeat until ready)**
+```javascript
+mcp__feedmob-reporting__check_smadex_report_status({
+  report_id: "abc-123"
+})
+```
+
+**Step 3: Get Report Data**
+```javascript
+mcp__feedmob-reporting__get_smadex_reports({
+  report_id: "abc-123"
+})
+```
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from Smadex
+  - `date`: Report date
+  - Other Smadex-specific fields
+
+---
+
+### get_inmobi_reports (Multi-step)
+
+Fetches InMobi report data. Requires 3-step workflow with SKAN and Non-SKAN reports.
+
+**Step 1: Get Report IDs**
+```javascript
+mcp__feedmob-reporting__get_inmobi_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Step 2: Check Status (repeat until ready)**
+```javascript
+mcp__feedmob-reporting__check_inmobi_report_status({
+  report_id: "abc-123",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Step 3: Get Report Data**
+```javascript
+mcp__feedmob-reporting__get_inmobi_reports({
+  skan_report_id: "skan-123",
+  non_skan_report_id: "non-skan-456",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from InMobi
+  - `date`: Report date
+  - Other InMobi-specific fields
+
+**Note:** InMobi returns two report types (SKAN and Non-SKAN) that should be combined for full coverage.
+
+---
+
+### get_liftoff_reports (Multi-step)
+
+Fetches Liftoff report data. Requires 3-step workflow with Stash and Possible Finance reports.
+
+**Step 1: Get Report IDs**
+```javascript
+mcp__feedmob-reporting__get_liftoff_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Step 2: Check Status (repeat until ready)**
+```javascript
+mcp__feedmob-reporting__check_liftoff_report_status({
+  stash_report_id: "stash-123",
+  possible_finance_report_id: "pf-456"
+})
+```
+
+**Step 3: Get Report Data**
+```javascript
+mcp__feedmob-reporting__get_liftoff_reports({
+  stash_report_id: "stash-123",
+  possible_finance_report_id: "pf-456",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Returns:**
+- Array of report data containing:
+  - `click_url_id`: The click URL identifier
+  - `partner_net_spend`: Net spend from Liftoff
+  - `date`: Report date
+  - Other Liftoff-specific fields
+
+**Note:** Liftoff returns two report types (Stash and Possible Finance) that should be combined for full coverage.
 
 ---
 

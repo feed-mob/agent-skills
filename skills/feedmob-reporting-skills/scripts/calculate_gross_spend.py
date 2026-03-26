@@ -149,7 +149,7 @@ def merge_with_direct_spend(calculated_data, direct_spend_data):
     # Build direct spend lookup: (click_url_id, date) -> direct_gross_spend
     direct_spend_map = {}
     for row in direct_spend_data:
-        key = (int(row['feedmob_click_url_id']), row['date'])
+        key = (int(row['click_url_id']), row['date'])
         direct_spend_map[key] = float(row['feedmob_gross_spend'])
 
     # Merge

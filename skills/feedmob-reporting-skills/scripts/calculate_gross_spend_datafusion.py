@@ -242,7 +242,7 @@ SELECT
     ) as difference_pct
 FROM calculated_with_spend c
 LEFT JOIN direct_spend d
-    ON CAST(c.click_url_id AS BIGINT) = CAST(d.feedmob_click_url_id AS BIGINT)
+    ON CAST(c.click_url_id AS BIGINT) = CAST(d.click_url_id AS BIGINT)
     AND c.date = d.date
 WHERE c.event_count > 0 OR COALESCE(d.feedmob_gross_spend, 0) > 0
 ORDER BY c.date, c.click_url_id
@@ -372,7 +372,7 @@ def print_summary(summary, available_events, diagnostics=None):
 def create_empty_direct_spend_csv(output_path):
     """Create an empty direct spend CSV with proper headers"""
     headers = [
-        'feedmob_click_url_id', 'date', 'campaign_name',
+        'click_url_id', 'date', 'campaign_name',
         'feedmob_net_spend', 'feedmob_gross_spend'
     ]
     with open(output_path, 'w', newline='') as f:
