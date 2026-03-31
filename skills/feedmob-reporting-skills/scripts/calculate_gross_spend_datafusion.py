@@ -22,6 +22,14 @@ Usage Examples:
         ./tmp/click_url_histories_2026-01-01_2026-01-20.csv \
         ./tmp/direct_spends_2026-01-01_2026-01-20.csv \
         ./tmp/output.csv
+
+    # With vendor_managed partner reports (e.g., Jampp)
+    python3 calculate_gross_spend_datafusion.py \
+        ./tmp/attribution_report.csv \
+        ./tmp/click_url_histories.csv \
+        ./tmp/direct_spends.csv \
+        ./tmp/output.csv \
+        ./tmp/jampp_reports.csv
 """
 
 import sys
@@ -29,6 +37,8 @@ import csv
 import subprocess
 from pathlib import Path
 from datetime import datetime
+
+import pandas as pd
 
 
 def check_and_install_dependencies():
@@ -244,7 +254,8 @@ FROM calculated_with_spend c
 LEFT JOIN direct_spend d
     ON CAST(c.click_url_id AS BIGINT) = CAST(d.click_url_id AS BIGINT)
     AND c.date = d.date
-WHERE c.event_count > 0 OR COALESCE(d.feedmob_gross_spend, 0) > 0
+WHERE c.client_paid_action != 'vendor_managed'
+    AND (c.event_count > 0 OR COALESCE(d.feedmob_gross_spend, 0) > 0)
 ORDER BY c.date, c.click_url_id
 """
 
@@ -255,6 +266,96 @@ ORDER BY c.date, c.click_url_id
     pandas_df = df.to_pandas()
     pandas_df.to_csv(output_csv, index=False)
 
+    return pandas_df
+
+
+def execute_vendor_managed_query(partner_report_csvs, histories_csv, direct_spend_csv, output_csv):
+    """Execute vendor_managed query using partner reports with margin-based gross calculation.
+
+    Formula: calculated_gross = partner_net_spend * (1 - margin/100)
+
+    Multiple partner report CSVs are UNION ALL'd to support multi-vendor scenarios.
+    """
+    from datafusion import SessionContext
+
+    ctx = SessionContext()
+
+    # Register histories and direct_spend
+    ctx.register_csv('histories', histories_csv, has_header=True)
+    ctx.register_csv('direct_spend', direct_spend_csv, has_header=True)
+
+    # Register and UNION ALL all partner report CSVs
+    if len(partner_report_csvs) == 1:
+        # Register directly as partner_report (avoid VIEW alias issues in DataFusion)
+        ctx.register_csv('partner_report', partner_report_csvs[0], has_header=True)
+    else:
+        for idx, partner_csv in enumerate(partner_report_csvs):
+            table_name = f'partner_report_{idx}'
+            ctx.register_csv(table_name, partner_csv, has_header=True)
+        union_parts = [f'SELECT * FROM partner_report_{i}' for i in range(len(partner_report_csvs))]
+        union_sql = ' UNION ALL '.join(union_parts)
+        ctx.sql(f'CREATE OR REPLACE VIEW partner_report AS {union_sql}')
+
+    vendor_managed_query = f"""
+WITH partner_agg AS (
+    SELECT
+        date,
+        CAST(click_url_id AS BIGINT) as click_url_id,
+        SUM(CAST(partner_net_spend AS DOUBLE)) as total_partner_net_spend
+    FROM partner_report
+    GROUP BY date, click_url_id
+),
+vendor_joined AS (
+    SELECT
+        partner_agg.date,
+        partner_agg.click_url_id,
+        histories.campaign_name,
+        histories.vendor_name,
+        partner_agg.total_partner_net_spend,
+        CAST(histories.margin AS DOUBLE) as margin
+    FROM partner_agg
+    INNER JOIN histories
+        ON partner_agg.click_url_id = CAST(histories.click_url_id AS BIGINT)
+        AND partner_agg.date = histories.date
+        AND histories.client_paid_action = 'vendor_managed'
+)
+SELECT
+    vendor_joined.date,
+    vendor_joined.click_url_id,
+    vendor_joined.campaign_name,
+    vendor_joined.vendor_name,
+    'vendor_managed' as client_paid_action,
+    'partner_net_spend' as event_field,
+    0 as event_count,
+    CAST(-1 AS DOUBLE) as gross_cpi,
+    ROUND(vendor_joined.total_partner_net_spend / (1.0 - vendor_joined.margin / 100.0), 2) as calculated_gross_spend,
+    ROUND(COALESCE(direct_spend.feedmob_gross_spend, 0), 2) as direct_gross_spend,
+    ROUND(
+        vendor_joined.total_partner_net_spend / (1.0 - vendor_joined.margin / 100.0)
+        - COALESCE(direct_spend.feedmob_gross_spend, 0),
+        2
+    ) as difference,
+    ROUND(
+        CASE
+            WHEN COALESCE(direct_spend.feedmob_gross_spend, 0) > 0
+            THEN (
+                (vendor_joined.total_partner_net_spend / (1.0 - vendor_joined.margin / 100.0)
+                - COALESCE(direct_spend.feedmob_gross_spend, 0))
+                / direct_spend.feedmob_gross_spend * 100
+            )
+            ELSE 0
+        END,
+        2
+    ) as difference_pct
+FROM vendor_joined
+LEFT JOIN direct_spend
+    ON vendor_joined.click_url_id = CAST(direct_spend.click_url_id AS BIGINT)
+    AND vendor_joined.date = direct_spend.date
+ORDER BY vendor_joined.date, vendor_joined.click_url_id
+"""
+
+    df = ctx.sql(vendor_managed_query)
+    pandas_df = df.to_pandas()
     return pandas_df
 
 
@@ -456,14 +557,15 @@ def collect_diagnostics(attribution_csv, histories_csv, direct_spend_status, ava
 
 def main():
     """Main function"""
-    if len(sys.argv) != 5:
-        print("Usage: python3 calculate_gross_spend_datafusion.py <attribution_report.csv> <histories.csv> <direct_spend.csv> <output.csv>")
+    if len(sys.argv) < 5:
+        print("Usage: python3 calculate_gross_spend_datafusion.py <attribution_report.csv> <histories.csv> <direct_spend.csv> <output.csv> [partner_report1.csv partner_report2.csv ...]")
         sys.exit(1)
 
     attribution_csv = sys.argv[1]
     histories_csv = sys.argv[2]
     direct_spend_csv = sys.argv[3]
     output_csv = sys.argv[4]
+    partner_report_csvs = sys.argv[5:]  # Optional partner report CSVs
 
     # Validate required input files (attribution and histories must exist)
     print("Validating input files...")
@@ -510,6 +612,25 @@ def main():
             aggregation_columns, event_count_cases, event_field_cases,
             output_csv
         )
+
+        # If partner reports provided, also execute vendor_managed query and merge
+        if partner_report_csvs:
+            print()
+            print(f"Detected {len(partner_report_csvs)} partner report(s), executing vendor_managed query...")
+            for pr_csv in partner_report_csvs:
+                if not Path(pr_csv).exists():
+                    print(f"✗ Error: Partner report file not found: {pr_csv}")
+                    sys.exit(1)
+                print(f"✓ Partner report: {pr_csv}")
+
+            df_vendor_managed = execute_vendor_managed_query(
+                partner_report_csvs, histories_csv, direct_spend_csv, output_csv
+            )
+
+            # Merge: existing query results + vendor_managed results
+            df = pd.concat([df, df_vendor_managed], ignore_index=True)
+            df.to_csv(output_csv, index=False)
+            print(f"✓ Merged {len(df_vendor_managed)} vendor_managed rows into output")
 
         row_count = len(df) + 1  # +1 for header
         print(f"✓ Query executed successfully")

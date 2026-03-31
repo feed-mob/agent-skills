@@ -106,6 +106,28 @@ mcp__feedmob-reporting__get_agency_conversion_records({
 
 ---
 
+### Step 2.5: Fetch Jampp Partner Report (For vendor_managed Campaigns)
+
+If the click_url_histories from Step 3 contain entries with `client_paid_action = "vendor_managed"`, fetch the Jampp partner report for gross spend calculation.
+
+```javascript
+mcp__feedmob-reporting__get_jampp_reports({
+  client_id: 123,  // Uber Technologies client_id from Step 1
+  start_date: "2026-01-15",
+  end_date: "2026-01-15"
+})
+```
+
+**Why needed:** Vendor-managed campaigns use partner net spend and margin to calculate gross:
+```
+calculated_gross = partner_net_spend × (1 - margin/100)
+```
+
+**Save CSV File:**
+- Save to `./tmp/jampp_reports_YYYY-MM-DD.csv`
+
+---
+
 ### Step 3: Get Historical Rates and Direct Spend (Parallel)
 
 **⚠️ From this point onwards, the workflow is IDENTICAL to TextNow and Possible Finance:**
@@ -146,15 +168,25 @@ Use the DataFusion script (identical to other clients):
 
 **Then execute:**
 ```bash
+# Without vendor_managed campaigns:
 python3 scripts/calculate_gross_spend_datafusion.py \
     ./tmp/agency_conversion_records_2026-01-15.csv \
     ./tmp/click_url_histories_2026-01-15.csv \
     ./tmp/direct_spends_2026-01-15.csv \
     ./tmp/uber_gross_spend_comparison.csv
+
+# With vendor_managed campaigns (add partner report CSV):
+python3 scripts/calculate_gross_spend_datafusion.py \
+    ./tmp/agency_conversion_records_2026-01-15.csv \
+    ./tmp/click_url_histories_2026-01-15.csv \
+    ./tmp/direct_spends_2026-01-15.csv \
+    ./tmp/uber_gross_spend_comparison.csv \
+    ./tmp/jampp_reports_2026-01-15.csv
 ```
 
 **Features:**
 - ✅ Uses formula: `client_paid_action_count × gross_cpi`
+- ✅ For vendor_managed: `partner_net_spend × (1 - margin/100)`
 - ✅ Dynamically matches event fields based on `client_paid_action`
 - ✅ Automatically aggregates multiple rows
 - ✅ Filters zero-activity records
@@ -236,16 +268,20 @@ Follow the standard format defined in [Report Structure Guide](report-structure.
 # Step 2: Get agency conversion records
 # API call returns csv_file_path: ./tmp/agency_conversion_records_2026-01-15.csv
 
+# Step 2.5: Get Jampp partner report (if vendor_managed campaigns exist)
+# API call returns csv_file_path: ./tmp/jampp_reports_2026-01-15.csv
+
 # Step 3: Get historical rates and direct spend (parallel)
 # Saves to: ./tmp/click_url_histories_2026-01-15.csv
 #           ./tmp/direct_spends_2026-01-15.csv
 
-# Step 4: Calculate comparison
+# Step 4: Calculate comparison (with optional partner report)
 python3 scripts/calculate_gross_spend_datafusion.py \
     ./tmp/agency_conversion_records_2026-01-15.csv \
     ./tmp/click_url_histories_2026-01-15.csv \
     ./tmp/direct_spends_2026-01-15.csv \
-    ./tmp/uber_comparison.csv
+    ./tmp/uber_comparison.csv \
+    ./tmp/jampp_reports_2026-01-15.csv
 
 # Step 5: Generate analysis summaries (mandatory)
 python3 scripts/analyze_gross_spend_datafusion.py \
@@ -283,17 +319,6 @@ python3 scripts/analyze_gross_spend_datafusion.py \
 ---
 
 ## Troubleshooting
-
-### Q: How do I find Uber's click_url_ids?
-
-**A:** Use `get_campaigns` filtered by client_id:
-```javascript
-mcp__feedmob-reporting__get_campaigns({
-  client_id: 123  // Uber's client_id
-})
-```
-
-Then extract `click_url_id` from campaign records.
 
 ### Q: What if agency_conversion_records returns no data?
 
