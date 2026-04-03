@@ -1,0 +1,41 @@
+{
+  "skill_name": "feed-agent",
+  "description": "Autonomous RSS/content aggregator with self-evolution capabilities for topic-specific intelligence gathering",
+  "evals": [
+    {
+      "id": 1,
+      "name": "discover-ai-agents-feeds",
+      "prompt": "Set up a feed agent to track news about AI Agents. Discover new sources and create an initial report.",
+      "expected_output": "The skill should initialize the topic 'AI Agents', discover relevant RSS feeds and sources, and generate a markdown report with discovered sources and their relevance scores.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "score-articles-relevance",
+      "prompt": "I have configured my feed agent for 'Quantum Computing'. Run the analyzer to score the articles I've fetched and show me which ones pass the relevance threshold.",
+      "expected_output": "The skill should run the analyzer script, apply the 0-10 scoring system, filter articles with score >= 7, and report which articles are promoted vs filtered.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "check-source-quality",
+      "prompt": "Show me the quality scores for all my sources tracking 'LLM Security'. Which ones should I consider pruning?",
+      "expected_output": "The skill should query the database for source quality metrics, identify sources with quality_score <0.3 or low_score_runs >= 3, and provide a list of sources to review or prune.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "generate-intelligence-report",
+      "prompt": "Generate today's intelligence report for my 'DevOps Tools' topic.",
+      "expected_output": "The skill should run the reporter script, format articles with score >= 7 into the markdown template with Core Insights, Detailed Analysis, and Self-Evolution sections, and display the report.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "add-custom-source",
+      "prompt": "Add 'https://openai.com/blog/rss.xml' as a manual source for my 'AI Agents' topic.",
+      "expected_output": "The skill should run pipeline.py --action add-source, store the source in the database with status 'active', and confirm the source was added.",
+      "files": []
+    }
+  ]
+}

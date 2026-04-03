@@ -1,0 +1,77 @@
+flowchart TD
+    subgraph User["User Commands"]
+        CMD1["`/feed-agent [topic]`"]
+        CMD2["`/feed-agent scout`"]
+        CMD3["`/feed-agent evolve`"]
+    end
+
+    subgraph Pipeline["Feed Agent Pipeline"]
+        direction TB
+        
+        INIT["1. Initialize<br/>Load config<br/>Create DB"] --> SCOUT
+        
+        SCOUT["2. Scout<br/>Search providers<br/>Discover sources"] --> |candidates.json| VALIDATE
+        
+        VALIDATE["Validate URLs<br/>Check RSS/HTML"] --> |active sources| FETCH
+        
+        FETCH["3. Fetch<br/>RSS/web scraping<br/>Extract content"] --> |raw articles| STORE1
+        
+        STORE1[(Database<br/>articles table)] --> ANALYZE
+        
+        ANALYZE["4. Analyze<br/>LLM scoring 0-10<br/>Extract insights<br/>Check duplicates"] --> |score ≥ 7| REPORT
+        
+        ANALYZE --> |score < 7| FILTER["Filtered out"]
+        
+        REPORT["5. Report<br/>Generate markdown<br/>Core insights<br/>Detailed analysis"] --> |reports/{topic}/{date}.md| OUTPUT
+        
+        OUTPUT["Intelligence Report"] --> EVOLVE
+        
+        EVOLVE["6. Self-Evolve<br/>Update source quality<br/>Promote/prune sources<br/>Extract keywords"]
+    end
+
+    subgraph DataStores["Data Storage"]
+        DB[(SQLite DB<br/>sources<br/>articles<br/>keywords<br/>evolution_log)]
+        CFG[config/feed-agent.yaml]
+        CAND[sources/feeds/{topic}/<br/>candidates.json]
+        REP[reports/{topic}/<br/>{date}.md]
+    end
+
+    subgraph Evolution["Self-Evolution Cycle"]
+        direction TB
+        QUALITY["Calculate<br/>source quality"] --> CHECK{Quality ≥ 0.7?}
+        CHECK -->|Yes| PROMOTE["Promote source<br/>Priority boost"]
+        CHECK -->|No| CHECK2{Quality < 0.3?}
+        CHECK2 -->|Yes + 3 runs| PRUNE["Flag for pruning"]
+        CHECK2 -->|No| MAINTAIN["Maintain status"]
+        
+        KEYWORDS["Extract keywords<br/>from high-scoring<br/>articles"] --> CAND_KEY["Add as<br/>candidate"]
+        CAND_KEY --> THRESH{Occurrence ≥ 2<br/>Confidence ≥ 0.7?}
+        THRESH -->|Yes| ACT_KEY["Promote to<br/>active"]
+        THRESH -->|No| WAIT["Wait for more<br/>evidence"]
+    end
+
+    CMD1 --> Pipeline
+    CMD2 --> SCOUT
+    CMD3 --> EVOLVE
+    
+    EVOLVE --> Evolution
+    
+    DB -.-> Pipeline
+    CFG -.-> INIT
+    CAND -.-> SCOUT
+    REP -.-> REPORT
+    
+    style Pipeline fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Evolution fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style DataStores fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style User fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    style INIT fill:#bbdefb,stroke:#1565c0
+    style SCOUT fill:#bbdefb,stroke:#1565c0
+    style FETCH fill:#bbdefb,stroke:#1565c0
+    style ANALYZE fill:#bbdefb,stroke:#1565c0
+    style REPORT fill:#bbdefb,stroke:#1565c0
+    style EVOLVE fill:#bbdefb,stroke:#1565c0
+    style FILTER fill:#ffcdd2,stroke:#c62828
+    style PROMOTE fill:#c8e6c9,stroke:#2e7d32
+    style PRUNE fill:#ffcdd2,stroke:#c62828
+    style ACT_KEY fill:#c8e6c9,stroke:#2e7d32
