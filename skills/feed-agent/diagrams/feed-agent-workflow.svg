@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 904.73125 1738.428" width="904.73125" height="1738.428" style="--bg:#1a1b26;--fg:#a9b1d6;--line:#3d59a1;--accent:#7aa2f7;--muted:#565f89;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="User" data-label="User Commands">
+  <rect x="116.09887499999996" y="246.75000000000009" width="188.805" height="210.70000000000002" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="116.09887499999996" y="246.75000000000009" width="188.805" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="128.09887499999996" y="260.7500000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">User Commands</text>
+</g>
+<g class="subgraph" data-id="Pipeline" data-label="Feed Agent Pipeline">
+  <rect x="316.68800000000005" y="471.00000000000006" width="548.0432500000001" height="462.1" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="316.68800000000005" y="471.00000000000006" width="548.0432500000001" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="328.68800000000005" y="485.00000000000006" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Feed Agent Pipeline</text>
+</g>
+<g class="subgraph" data-id="DataStores" data-label="Data Storage">
+  <rect x="554.4807500000001" y="40" width="204.36599999999996" height="383.00000000000006" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="554.4807500000001" y="40" width="204.36599999999996" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="566.4807500000001" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Data Storage</text>
+</g>
+<g class="subgraph" data-id="Evolution" data-label="Self-Evolution Cycle">
+  <rect x="40" y="981.1000000000001" width="680.6780000000001" height="717.328" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="981.1000000000001" width="680.6780000000001" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="995.1000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Self-Evolution Cycle</text>
+</g>
+<polyline class="edge" data-from="CMD1" data-to="Pipeline" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="280.75287499999996,303.52500000000003 304.90387499999997,303.52500000000003 430.584375,309.2000000000001 430.584375,435.00000000000006 316.68800000000005,435.00000000000006 316.68800000000005,471.00000000000006" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CMD2" data-to="SCOUT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="281.493875,368.87500000000006 304.90387499999997,368.87500000000006 418.584375,366.1000000000001 418.584375,459.00000000000006 547.09925,459.00000000000006 547.09925,471.00000000000006 547.09925,597.7 562.2017500000001,597.7 562.2017500000001,633.7" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CMD3" data-to="EVOLVE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="210.50137499999997,441.45000000000005 210.50137499999997,575.9000000000001 380.33900000000006,575.9000000000001 380.33900000000006,599.9000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="EVOLVE" data-to="Evolution" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="380.33900000000006,636.8000000000001 380.33900000000006,933.1000000000001 380.33900000000006,981.1000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="DB" data-to="Pipeline" data-style="dotted" data-arrow-start="false" data-arrow-end="true" points="690.97675,143.25 758.84675,143.25 804.84675,143.25 804.84675,447.00000000000006 316.68800000000005,447.00000000000006 316.68800000000005,471.00000000000006" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CFG" data-to="INIT" data-style="dotted" data-arrow-start="false" data-arrow-end="true" points="742.84675,240.95 758.84675,240.95 792.84675,240.95 792.84675,459.00000000000006 613.5307500000001,459.00000000000006 613.5307500000001,471.00000000000006 613.5307500000001,515" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CAND" data-to="SCOUT" data-style="dotted" data-arrow-start="false" data-arrow-end="true" points="742.1057500000001,311.9750000000001 758.84675,311.9750000000001 780.84675,306.3 780.84675,435.00000000000006 529.798,435.00000000000006 529.798,471.00000000000006 529.798,597.7 540.59925,597.7 540.59925,633.7" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="REP" data-to="REPORT" data-style="dotted" data-arrow-start="false" data-arrow-end="true" points="699.8687500000001,377.32500000000005 758.84675,377.32500000000005 768.84675,380.1 768.84675,471.00000000000006 768.84675,515" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="INIT" data-to="SCOUT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="613.5307500000001,585.7 613.5307500000001,597.7 583.8042500000001,597.7 583.8042500000001,633.7" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="STORE1" data-to="ANALYZE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="749.01025,832.2 749.01025,880.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="OUTPUT" data-to="EVOLVE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="423.55825000000004,551.9 423.55825000000004,575.9000000000001 380.33900000000006,575.9000000000001 380.33900000000006,599.9000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="QUALITY" data-to="CHECK" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="476.04025,1078.9 476.04025000000007,1135.3500000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CHECK" data-to="PROMOTE" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes" points="452.2045833333334,1254.5283333333334 452.2045833333334,1281.9140000000002 392.27250000000004,1281.9140000000002 392.27250000000004,1386.2140000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CHECK" data-to="CHECK2" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="499.87591666666674,1254.5283333333334 499.87591666666674,1281.9140000000002 559.808,1281.9140000000002 559.808,1386.2140000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CHECK2" data-to="PRUNE" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes + 3 runs" points="535.9723333333334,1505.3923333333335 535.9723333333334,1541.228 479.63200000000006,1541.228 479.63200000000006,1645.5280000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CHECK2" data-to="MAINTAIN" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="583.6436666666667,1505.3923333333335 583.6436666666667,1541.228 639.984,1541.228 639.984,1645.5280000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="KEYWORDS" data-to="CAND_KEY" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="176.7875,1095.8000000000002 176.7875,1135.3500000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CAND_KEY" data-to="THRESH" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="176.7875,1189.15 176.7875,1245.6000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="THRESH" data-to="ACT_KEY" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes" points="148.50583333333333,1387.0083333333334 148.50583333333333,1427.2900000000002 107.72649999999999,1427.2900000000002 107.7265,1531.5900000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="THRESH" data-to="WAIT" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="205.06916666666666,1387.0083333333334 205.06916666666666,1427.2900000000002 245.8485,1427.2900000000002 245.84849999999997,1531.5900000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="CHECK" data-to="PROMOTE" data-label="Yes">
+  <rect x="373.77250000000004" y="1312.914" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="392.10150000000004" y="1328.064" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes</text>
+</g>
+<g class="edge-label" data-from="CHECK" data-to="CHECK2" data-label="No">
+  <rect x="544.308" y="1312.914" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="559.667" y="1328.064" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="CHECK2" data-to="PRUNE" data-label="Yes + 3 runs">
+  <rect x="441.13200000000006" y="1572.228" width="76.45599999999999" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="479.36000000000007" y="1587.3780000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes + 3 runs</text>
+</g>
+<g class="edge-label" data-from="CHECK2" data-to="MAINTAIN" data-label="No">
+  <rect x="624.484" y="1572.228" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="639.8430000000001" y="1587.3780000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="THRESH" data-to="ACT_KEY" data-label="Yes">
+  <rect x="89.22649999999999" y="1458.29" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="107.5555" y="1473.44" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes</text>
+</g>
+<g class="edge-label" data-from="THRESH" data-to="WAIT" data-label="No">
+  <rect x="230.3485" y="1458.29" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="245.7075" y="1473.44" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="node" data-id="CMD1" data-label="&quot;`/feed-agent [topic" data-shape="rectangle">
+  <rect x="132.09887499999996" y="285.07500000000005" width="148.654" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="206.42587499999996" y="303.52500000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">&quot;`/feed-agent [topic</text>
+</g>
+<g class="node" data-id="CMD2" data-label="`/feed-agent scout`" data-shape="rectangle">
+  <rect x="132.09887499999996" y="350.42500000000007" width="149.395" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="206.79637499999995" y="368.87500000000006" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">`/feed-agent scout`</text>
+</g>
+<g class="node" data-id="CMD3" data-label="`/feed-agent evolve`" data-shape="rectangle">
+  <rect x="132.09887499999996" y="404.55000000000007" width="156.805" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="210.50137499999997" y="423.00000000000006" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">`/feed-agent evolve`</text>
+</g>
+<g class="node" data-id="INIT" data-label="1. Initialize
+Load config
+Create DB" data-shape="rectangle">
+  <rect x="558.09925" y="515" width="110.863" height="70.7" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="613.53075" y="550.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="613.53075" dy="-12.350000000000001">1. Initialize</tspan><tspan x="613.53075" dy="16.900000000000002">Load config</tspan><tspan x="613.53075" dy="16.900000000000002">Create DB</tspan></text>
+</g>
+<g class="node" data-id="SCOUT" data-label="SCOUT" data-shape="rectangle">
+  <rect x="518.99675" y="633.7" width="86.41" height="36.900000000000006" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="562.2017500000001" y="652.1500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SCOUT</text>
+</g>
+<g class="node" data-id="VALIDATE" data-label="Validate URLs
+Check RSS/HTML" data-shape="rectangle">
+  <rect x="518.99675" y="690.6000000000001" width="150.87699999999998" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="594.43525" y="717.5000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="594.43525" dy="-3.9000000000000012">Validate URLs</tspan><tspan x="594.43525" dy="16.900000000000002">Check RSS/HTML</tspan></text>
+</g>
+<g class="node" data-id="FETCH" data-label="3. Fetch
+RSS/web scraping
+Extract content" data-shape="rectangle">
+  <rect x="518.99675" y="764.4000000000001" width="151.618" height="70.7" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="594.80575" y="799.7500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="594.80575" dy="-12.350000000000001">3. Fetch</tspan><tspan x="594.80575" dy="16.900000000000002">RSS/web scraping</tspan><tspan x="594.80575" dy="16.900000000000002">Extract content</tspan></text>
+</g>
+<g class="node" data-id="STORE1" data-label="Database
+articles table" data-shape="cylinder">
+  <rect x="690.61475" y="771.4000000000001" width="116.79099999999998" height="53.80000000000001" fill="var(--_node-fill)" stroke="none" />
+  <line x1="690.61475" y1="771.4000000000001" x2="690.61475" y2="825.2" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="807.4057499999999" y1="771.4000000000001" x2="807.4057499999999" y2="825.2" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="749.0102499999999" cy="825.2" rx="58.39549999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="749.0102499999999" cy="771.4000000000001" rx="58.39549999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="749.0102499999999" y="798.3000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="749.0102499999999" dy="-3.9000000000000012">Database</tspan><tspan x="749.0102499999999" dy="16.900000000000002">articles table</tspan></text>
+</g>
+<g class="node" data-id="ANALYZE" data-label="ANALYZE" data-shape="rectangle">
+  <rect x="696.9132500000001" y="880.2" width="104.194" height="36.900000000000006" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="749.01025" y="898.6500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ANALYZE</text>
+</g>
+<g class="node" data-id="REPORT" data-label="5. Report
+Generate markdown
+Core insights
+Detailed analysis" data-shape="rectangle">
+  <rect x="688.96225" y="515" width="159.769" height="87.60000000000001" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="768.84675" y="558.8" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="768.84675" dy="-20.8">5. Report</tspan><tspan x="768.84675" dy="16.900000000000002">Generate markdown</tspan><tspan x="768.84675" dy="16.900000000000002">Core insights</tspan><tspan x="768.84675" dy="16.900000000000002">Detailed analysis</tspan></text>
+</g>
+<g class="node" data-id="OUTPUT" data-label="Intelligence Report" data-shape="rectangle">
+  <rect x="348.11975" y="515" width="150.877" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="423.55825000000004" y="533.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Intelligence Report</text>
+</g>
+<g class="node" data-id="EVOLVE" data-label="EVOLVE" data-shape="rectangle">
+  <rect x="332.68800000000005" y="599.9000000000001" width="95.30199999999999" height="36.900000000000006" rx="0" ry="0" fill="#bbdefb" stroke="#1565c0" stroke-width="0.75" />
+  <text x="380.33900000000006" y="618.3500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">EVOLVE</text>
+</g>
+<g class="node" data-id="DB" data-label="SQLite DB
+sources
+articles
+keywords
+evolution_log" data-shape="cylinder">
+  <rect x="570.4807500000001" y="91" width="120.49600000000001" height="104.50000000000001" fill="var(--_node-fill)" stroke="none" />
+  <line x1="570.4807500000001" y1="91" x2="570.4807500000001" y2="195.5" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="690.97675" y1="91" x2="690.97675" y2="195.5" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="630.7287500000001" cy="195.5" rx="60.248000000000005" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="630.7287500000001" cy="91" rx="60.248000000000005" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="630.7287500000001" y="143.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="630.7287500000001" dy="-29.250000000000004">SQLite DB</tspan><tspan x="630.7287500000001" dy="16.900000000000002">sources</tspan><tspan x="630.7287500000001" dy="16.900000000000002">articles</tspan><tspan x="630.7287500000001" dy="16.900000000000002">keywords</tspan><tspan x="630.7287500000001" dy="16.900000000000002">evolution_log</tspan></text>
+</g>
+<g class="node" data-id="CFG" data-label="config/feed-agent.yaml" data-shape="rectangle">
+  <rect x="570.4807500000001" y="222.5" width="172.36599999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="656.66375" y="240.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">config/feed-agent.yaml</text>
+</g>
+<g class="node" data-id="CAND" data-label="sources/feeds/{topic}/
+candidates.json" data-shape="rectangle">
+  <rect x="570.4807500000001" y="285.07500000000005" width="171.62499999999997" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="656.2932500000001" y="311.975" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="656.2932500000001" dy="-3.9000000000000012">sources/feeds/{topic}/</tspan><tspan x="656.2932500000001" dy="16.900000000000002">candidates.json</tspan></text>
+</g>
+<g class="node" data-id="REP" data-label="reports/{topic}/
+{date}.md" data-shape="rectangle">
+  <rect x="570.4807500000001" y="350.42500000000007" width="129.388" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="635.17475" y="377.32500000000005" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="635.17475" dy="-3.9000000000000012">reports/{topic}/</tspan><tspan x="635.17475" dy="16.900000000000002">{date}.md</tspan></text>
+</g>
+<g class="node" data-id="QUALITY" data-label="Calculate
+source quality" data-shape="rectangle">
+  <rect x="413.19875" y="1025.1000000000001" width="125.68299999999999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="476.04025" y="1052.0000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="476.04025" dy="-3.9000000000000012">Calculate</tspan><tspan x="476.04025" dy="16.900000000000002">source quality</tspan></text>
+</g>
+<g class="node" data-id="CHECK" data-label="Quality ≥ 0.7?" data-shape="diamond">
+  <polygon points="476.04025000000007,1135.3500000000001 547.5472500000001,1206.8570000000002 476.04025000000007,1278.3640000000003 404.53325000000007,1206.8570000000002" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="476.04025000000007" y="1206.8570000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Quality ≥ 0.7?</text>
+</g>
+<g class="node" data-id="PROMOTE" data-label="Promote source
+Priority boost" data-shape="rectangle">
+  <rect x="324.244" y="1386.2140000000002" width="136.05700000000002" height="53.800000000000004" rx="0" ry="0" fill="#c8e6c9" stroke="#2e7d32" stroke-width="0.75" />
+  <text x="392.27250000000004" y="1413.1140000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="392.27250000000004" dy="-3.9000000000000012">Promote source</tspan><tspan x="392.27250000000004" dy="16.900000000000002">Priority boost</tspan></text>
+</g>
+<g class="node" data-id="CHECK2" data-label="Quality &lt; 0.3?" data-shape="diamond">
+  <polygon points="559.808,1386.2140000000002 631.315,1457.7210000000002 559.808,1529.2280000000003 488.301,1457.7210000000002" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="559.808" y="1457.7210000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Quality &lt; 0.3?</text>
+</g>
+<g class="node" data-id="PRUNE" data-label="Flag for pruning" data-shape="rectangle">
+  <rect x="411.97400000000005" y="1645.5280000000002" width="135.31599999999997" height="36.900000000000006" rx="0" ry="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.75" />
+  <text x="479.63200000000006" y="1663.9780000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Flag for pruning</text>
+</g>
+<g class="node" data-id="MAINTAIN" data-label="Maintain status" data-shape="rectangle">
+  <rect x="575.2900000000001" y="1645.5280000000002" width="129.388" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="639.984" y="1663.9780000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Maintain status</text>
+</g>
+<g class="node" data-id="KEYWORDS" data-label="Extract keywords
+from high-scoring
+articles" data-shape="rectangle">
+  <rect x="103.572" y="1025.1000000000001" width="146.43099999999998" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="176.7875" y="1060.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="176.7875" dy="-12.350000000000001">Extract keywords</tspan><tspan x="176.7875" dy="16.900000000000002">from high-scoring</tspan><tspan x="176.7875" dy="16.900000000000002">articles</tspan></text>
+</g>
+<g class="node" data-id="CAND_KEY" data-label="Add as
+candidate" data-shape="rectangle">
+  <rect x="126.9135" y="1135.3500000000001" width="99.748" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="176.7875" y="1162.2500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="176.7875" dy="-3.9000000000000012">Add as</tspan><tspan x="176.7875" dy="16.900000000000002">candidate</tspan></text>
+</g>
+<g class="node" data-id="THRESH" data-label="Occurrence ≥ 2
+Confidence ≥ 0.7?" data-shape="diamond">
+  <polygon points="176.7875,1245.6000000000001 261.6325,1330.4450000000002 176.7875,1415.2900000000002 91.9425,1330.4450000000002" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="176.7875" y="1330.4450000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="176.7875" dy="-3.9000000000000012">Occurrence ≥ 2</tspan><tspan x="176.7875" dy="16.900000000000002">Confidence ≥ 0.7?</tspan></text>
+</g>
+<g class="node" data-id="ACT_KEY" data-label="Promote to
+active" data-shape="rectangle">
+  <rect x="56" y="1531.5900000000001" width="103.453" height="53.800000000000004" rx="0" ry="0" fill="#c8e6c9" stroke="#2e7d32" stroke-width="0.75" />
+  <text x="107.7265" y="1558.4900000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="107.7265" dy="-3.9000000000000012">Promote to</tspan><tspan x="107.7265" dy="16.900000000000002">active</tspan></text>
+</g>
+<g class="node" data-id="WAIT" data-label="Wait for more
+evidence" data-shape="rectangle">
+  <rect x="187.45299999999997" y="1531.5900000000001" width="116.791" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="245.84849999999997" y="1558.4900000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="245.84849999999997" dy="-3.9000000000000012">Wait for more</tspan><tspan x="245.84849999999997" dy="16.900000000000002">evidence</tspan></text>
+</g>
+</svg>
