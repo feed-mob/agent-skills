@@ -245,3 +245,163 @@ Before sending the final report, verify:
 ❌ **Don't include CPM in "Perfect Match" counts**
 - Perfect matches should only count verifiable (Non-CPM) campaigns
 - CPM accuracy cannot be calculated without CPM rates
+
+---
+
+## Net Spend Report Structure
+
+For partner reports (Jampp, Kayzen, YouAppi, Samsung, Smadex, InMobi, Liftoff), use this structure for net spend verification.
+
+### Key Difference from Gross Spend
+
+| Aspect | Gross Spend | Net Spend |
+|--------|-------------|-----------|
+| **Source** | Attribution Reports (Singular/Adjust) | Partner Reports |
+| **Comparison** | `calculated_gross` vs `direct_gross` | `partner_net_spend` vs `feedmob_net_spend` |
+| **Calculation** | `event_count × gross_cpi` | No calculation needed |
+| **Rate Required** | Yes (`gross_cpi` from histories) | No |
+
+---
+
+### 1. Net Spend Overall Summary
+
+```
+Total Click URLs: X
+Total Partner Net Spend: $X,XXX.XX
+Total FeedMob Net Spend: $X,XXX.XX
+Total Difference: $XXX.XX (X.X%)
+Partner: [Jampp/Kayzen/YouAppi/etc.]
+Date Range: YYYY-MM-DD to YYYY-MM-DD
+```
+
+---
+
+### 2. Click URL Level Comparison Table
+
+```
+| Click URL | Campaign | Vendor | Date | Partner Net | FeedMob Net | Difference | Diff % | Status |
+|-----------|----------|--------|------|-------------|-------------|------------|--------|--------|
+| 12345 | Campaign_A | Jampp | 2025-01-01 | $1,500.00 | $1,500.00 | $0.00 | 0.00% | ✅ |
+| 12346 | Campaign_B | Jampp | 2025-01-01 | $2,000.00 | $1,950.00 | $50.00 | 2.56% | 🚨 |
+```
+
+**Columns:**
+- **Click URL**: Unique campaign identifier
+- **Campaign**: Campaign name
+- **Vendor**: Partner/vendor name
+- **Date**: Report date
+- **Partner Net**: Net spend from partner report (`partner_net_spend`)
+- **FeedMob Net**: Net spend from FeedMob records (`feedmob_net_spend`)
+- **Difference**: Partner Net - FeedMob Net
+- **Diff %**: Percentage difference
+- **Status**: Visual indicator (see Status Icons below)
+
+---
+
+### 3. Vendor Level Summary Table
+
+```
+| Vendor | Click URLs | Partner Net | FeedMob Net | Difference | Diff % | Status |
+|--------|-----------|-------------|-------------|------------|--------|--------|
+| Jampp | 5 | $15,000.00 | $14,950.00 | $50.00 | 0.33% | ✅ |
+```
+
+**Aggregation:**
+- Sum all net spend across click URLs for each vendor
+- Useful for identifying which vendors have discrepancies
+
+---
+
+### 4. Net Spend Verification Accuracy Statistics
+
+```
+| Accuracy Level | Click URL Count | Percentage | Total Amount |
+|----------------|----------------|------------|-------------|
+| Perfect (0%) | X | XX.X% | $X,XXX.XX |
+| Excellent (<1%) | X | XX.X% | $X,XXX.XX |
+| Good (1-2%) | X | XX.X% | $X,XXX.XX |
+| Needs Attention (≥2%) | X | XX.X% | $X,XXX.XX |
+
+Verified Accuracy: X/X = XX.X% ✅
+```
+
+**Accuracy Levels for Net Spend:**
+- **Perfect**: 0% difference (partner = feedmob)
+- **Excellent**: < 1% difference
+- **Good**: 1-2% difference
+- **Needs Attention**: ≥ 2% difference
+
+---
+
+### 5. Status Icons for Net Spend
+
+Use these visual indicators in tables:
+
+- ✅ **Perfect Match**: 0% difference
+- ⚠️ **Minor Difference**: <2% difference
+- 🚨 **Significant Difference**: ≥2% difference
+
+---
+
+### 6. Key Findings and Recommendations
+
+Provide actionable insights:
+
+- List top performing Click URLs and Vendors (by accuracy)
+- Flag Click URLs or Vendors with significant discrepancies
+- Identify:
+  - **Partner-only entries**: Click URLs in partner report but not in FeedMob
+  - **FeedMob-only entries**: Click URLs in FeedMob but not in partner report
+- Provide specific action items:
+  - "Investigate Click URL 12345 - $50 discrepancy"
+  - "Excellent performance from Jampp - all campaigns within 1%"
+  - "Missing FeedMob records for Click URLs: [list]"
+
+---
+
+### Net Spend Report Filtering Rules
+
+Apply these rules when generating reports:
+
+**Sorting:**
+- **Click URL Table**: Sort by Absolute Difference (descending)
+- **Vendor Table**: Sort by Total Partner Net Spend (descending)
+
+**Filtering:**
+- **Filter out zero-activity rows**: Exclude rows where both Partner Net and FeedMob Net are $0.00
+- **Keep single-side entries**: Include rows where only one side has data (indicates missing records)
+
+**Grouping:**
+- Group by Click URL ID for aggregation across dates
+- Group by Vendor for vendor-level analysis
+
+---
+
+### Example Net Spend Report Output
+
+```
+## Jampp Net Spend Verification Report
+**Date Range:** 2025-01-01 to 2025-01-31
+
+### Overall Summary
+- Total Click URLs: 15
+- Total Partner Net Spend: $45,234.56
+- Total FeedMob Net Spend: $45,189.23
+- Total Difference: $45.33 (0.10%)
+
+### Verification Status
+- ✅ Perfect Match: 10 campaigns (66.7%)
+- ⚠️ Minor Difference (<2%): 4 campaigns (26.7%)
+- 🚨 Significant Difference (≥2%): 1 campaign (6.6%)
+
+### Anomalies
+| Click URL | Date | Partner | FeedMob | Diff | Action |
+|-----------|------|---------|---------|------|--------|
+| 12346 | 2025-01-15 | $2,000.00 | $1,950.00 | $50.00 (2.56%) | Review billing |
+
+### Key Findings
+1. Excellent overall accuracy - 99.9% match
+2. 1 campaign with >2% difference requires review
+3. All discrepancies are in Jampp's favor (partner > feedmob)
+```
+

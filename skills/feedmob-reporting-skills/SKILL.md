@@ -211,7 +211,185 @@ For detailed report structure and formatting guide, see: **[Report Structure Gui
 
 ---
 
-### 2. AppsFlyer MMP Client Workflow
+### 2. Net Spend Verification Workflow (Partner Reports)
+
+Compare partner reports (Jampp, Kayzen, etc.) with direct spend data to verify net spend accuracy.
+
+**Applicable Partners:**
+- ✅ Jampp
+- ✅ Kayzen
+- ✅ YouAppi
+- ✅ Samsung
+- ✅ Smadex
+- ✅ InMobi
+- ✅ Liftoff
+
+**When to use:** When verifying net spend from partner platforms against FeedMob direct spend records.
+
+**Key Difference from Gross Spend:**
+- **Gross Spend**: Requires calculation (`client_paid_action_count × gross_cpi`)
+- **Net Spend**: Direct comparison (`partner_net_spend` vs `feedmob_net_spend`)
+
+**Workflow Steps:**
+
+#### Step 1: Fetch Partner Report
+
+**Direct Partners (Jampp, Kayzen, YouAppi, Samsung):**
+
+```javascript
+// Jampp - requires client_id
+mcp__feedmob-reporting__get_jampp_reports({
+  client_id: 123,
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Kayzen - no client_id required
+mcp__feedmob-reporting__get_kayzen_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// YouAppi - no client_id required
+mcp__feedmob-reporting__get_youappi_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Samsung - no client_id required
+mcp__feedmob-reporting__get_samsung_reports({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Multi-step Partners (Smadex, InMobi, Liftoff):**
+
+**Smadex (3-step process):**
+```javascript
+// Step 1: Get report IDs
+mcp__feedmob-reporting__get_smadex_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Step 2: Check status (repeat until ready)
+mcp__feedmob-reporting__check_smadex_report_status({
+  report_id: "abc-123"
+})
+
+// Step 3: Get report data when status is "ready"
+mcp__feedmob-reporting__get_smadex_reports({
+  report_id: "abc-123"
+})
+```
+
+**InMobi (3-step process):**
+```javascript
+// Step 1: Get report IDs
+mcp__feedmob-reporting__get_inmobi_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Step 2: Check status (repeat until ready)
+mcp__feedmob-reporting__check_inmobi_report_status({
+  report_id: "abc-123",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Step 3: Get report data when status is "ready"
+mcp__feedmob-reporting__get_inmobi_reports({
+  skan_report_id: "skan-123",
+  non_skan_report_id: "non-skan-456",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Liftoff (3-step process):**
+```javascript
+// Step 1: Get report IDs
+mcp__feedmob-reporting__get_liftoff_report_ids({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+
+// Step 2: Check status (repeat until ready)
+mcp__feedmob-reporting__check_liftoff_report_status({
+  stash_report_id: "stash-123",
+  possible_finance_report_id: "pf-456"
+})
+
+// Step 3: Get report data when status is "ready"
+mcp__feedmob-reporting__get_liftoff_reports({
+  stash_report_id: "stash-123",
+  possible_finance_report_id: "pf-456",
+  start_date: "2025-01-01",
+  end_date: "2025-01-31"
+})
+```
+
+**Response contains:**
+- `click_url_id`: Click URL identifier
+- `partner_net_spend`: Net spend from partner report
+- `date`: Report date
+- Other partner-specific fields
+
+#### Step 2: Extract Click URL IDs and Fetch Direct Spends
+
+From partner report, extract all unique `click_url_id` values, then fetch direct spends:
+
+```javascript
+mcp__feedmob-reporting__get_direct_spends({
+  start_date: "2025-01-01",
+  end_date: "2025-01-31",
+  click_url_ids: ["12345", "12346", ...]  // string array
+})
+```
+
+#### Step 3: Use Automation Scripts (Recommended)
+
+**Step 3.1: Compare Net Spend**
+
+First use Glob to find: `**/compare_net_spend_datafusion.py`
+
+```bash
+python3 scripts/compare_net_spend_datafusion.py \
+    <partner_report.csv> <direct_spend.csv> <output.csv>
+```
+
+**Step 3.2: Generate Analysis Summary**
+
+```bash
+python3 scripts/analyze_net_spend_datafusion.py \
+    <comparison_report.csv> <output_directory>
+```
+
+**For detailed script usage, see:**
+**[Scripts Usage Guide](references/scripts-usage-guide.md)**
+
+#### Step 4: Generate Final Report
+
+Compare `partner_net_spend` vs `feedmob_net_spend`:
+
+| Click URL | Date | Partner Net | FeedMob Net | Difference | Diff % | Status |
+|-----------|------|-------------|-------------|------------|--------|--------|
+| 12345 | 2025-01-01 | $1,500.00 | $1,500.00 | $0.00 | 0.00% | ✅ |
+| 12346 | 2025-01-01 | $2,000.00 | $1,950.00 | $50.00 | 2.56% | 🚨 |
+
+**Status Icons:**
+- ✅ **Perfect Match**: 0% difference
+- ⚠️ **Minor Difference**: <2% difference
+- 🚨 **Significant Difference**: ≥2% difference
+
+**For detailed report structure, see:**
+**[Report Structure Guide](references/report-structure.md)**
+
+---
+
+### 3. AppsFlyer MMP Client Workflow
 
 Use this workflow when client uses AppsFlyer as MMP (instead of Singular or Adjust).
 

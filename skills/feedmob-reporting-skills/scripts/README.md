@@ -114,7 +114,7 @@ click_url_id,campaign_name,vendor_name,date,gross_cpi,net_cpi,client_paid_action
 
 3. **Direct Spends** (direct_spends_*.csv):
 ```
-feedmob_click_url_id,campaign_name,date,feedmob_net_spend,feedmob_gross_spend
+click_url_id,campaign_name,date,feedmob_net_spend,feedmob_gross_spend
 19742,PossibleFinance_iOS_US_CPI_Agency,2026-01-01,307.81,308.0
 ```
 
@@ -212,7 +212,7 @@ for row in singular_data:
 # Manual merge
 direct_spend_map = {}
 for row in direct_spend_data:
-    key = (int(row['feedmob_click_url_id']), row['date'])
+    key = (int(row['click_url_id']), row['date'])
     direct_spend_map[key] = float(row['feedmob_gross_spend'])
 
 merged_data = []
@@ -247,7 +247,7 @@ SELECT
     c.calculated_gross_spend - d.feedmob_gross_spend as difference
 FROM calculated c
 LEFT JOIN direct_spend d
-    ON c.click_url_id = d.feedmob_click_url_id
+    ON c.click_url_id = d.click_url_id
     AND c.date = d.date
 ```
 
