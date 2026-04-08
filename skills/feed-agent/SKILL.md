@@ -310,6 +310,17 @@ Action:
 8. Display summary to user
 ```
 
+## Resource Requirements
+
+When invoking this skill, AI agents should be aware of the following runtime characteristics:
+
+- **Typical time:** 3-10 minutes depending on source count and network conditions
+- **Network:** Heavy (multiple RSS fetches, web searches, and content extraction)
+- **Recommended timeout:** `timeoutSeconds: 600` (10 minutes) minimum
+- **Token usage:** ~500k-1M tokens per full pipeline run
+
+This is a long-running batch task. Do not expect synchronous results; use appropriate async patterns (e.g., `sessions_yield`, background sessions) when calling.
+
 ## Error Handling
 
 | Error | Response |
