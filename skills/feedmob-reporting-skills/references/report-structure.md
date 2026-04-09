@@ -81,9 +81,13 @@ Perfect Match Click URLs: X (X.X%) ✅
 
 ### 3. CPM Activity Section (Separate Display)
 
-CPM activities use `client_paid_action = "vendor_managed"` and `gross_cpi = -1`, cannot be verified using CPI formula.
+CPM activities use `client_paid_action = "vendor_managed"` and `gross_cpi = -1`.
 
-#### 3.1 CPM Click URL List
+**When partner reports are available:** Gross spend can be calculated using `partner_net_spend × (1 - margin/100)`. In this case, vendor_managed campaigns appear in the Non-CPM comparison tables with `event_field = "partner_net_spend"` and are included in accuracy statistics.
+
+**When partner reports are NOT available:** Cannot verify using CPI formula. Display separately as shown below.
+
+#### 3.1 CPM Click URL List (Without Partner Report)
 
 ```
 | Click URL | Campaign | Vendor | Direct Gross | Note |

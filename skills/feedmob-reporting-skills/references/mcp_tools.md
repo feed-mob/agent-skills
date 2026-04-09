@@ -614,6 +614,12 @@ Fetches historical CPI (Cost Per Install) and rate data for click URLs.
   - Common for CPM campaigns that don't use CPI-based pricing
   - Cannot calculate expected spend when rate is -1
 
+**Vendor-Managed Fields:**
+- `margin`: Margin percentage for vendor_managed campaigns (e.g., 40)
+  - Only present when `client_paid_action = "vendor_managed"`
+  - Used to calculate gross from partner net spend: `calculated_gross = partner_net_spend × (1 - margin/100)`
+  - When `margin` is set, `gross_cpi` and `net_cpi` are typically `-1`
+
 **Example:**
 ```javascript
 mcp__feedmob-reporting__get_click_url_histories({

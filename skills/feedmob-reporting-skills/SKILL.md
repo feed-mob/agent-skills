@@ -111,6 +111,35 @@ Compare attribution reports (Singular/Adjust/etc.) with direct spend data to ide
 **For detailed API calls, data validation, and CSV saving process, see:**
 **[Data Collection Guide](references/data-collection-guide.md)**
 
+#### Step 1.5: Fetch Partner Reports (When vendor_managed Campaigns Exist)
+
+**When to use:** When `click_url_histories` contains entries with `client_paid_action = "vendor_managed"` and `margin` field.
+
+**Why needed:** Vendor-managed campaigns (CPM billing) don't have event data in attribution reports. Instead, gross spend is calculated from partner `partner_net_spend` and `margin`:
+```
+calculated_gross = partner_net_spend × (1 - margin/100)
+```
+
+**Choose tool based on partner:**
+- Jampp → `get_jampp_reports` (requires `client_id`)
+- Kayzen → `get_kayzen_reports`
+- YouAppi → `get_youappi_reports`
+- Samsung → `get_samsung_reports`
+
+**Example:**
+```javascript
+// Fetch Jampp partner report (if Jampp vendor_managed campaigns exist)
+mcp__feedmob-reporting__get_jampp_reports({
+  client_id: 123,
+  start_date: "2026-01-15",
+  end_date: "2026-01-15"
+})
+```
+
+**Save the response CSV** for use in Step 3.5.
+
+---
+
 #### Step 2: Fetch Historical Rates and Direct Spend (Parallel)
 
 **Call two tools in parallel:**
@@ -150,8 +179,14 @@ First use Glob to find: `**/calculate_gross_spend_datafusion.py`
 
 ```bash
 python3 scripts/calculate_gross_spend_datafusion.py \
-    <attribution_report.csv> <histories.csv> <direct_spend.csv> <output.csv>
+    <attribution_report.csv> <histories.csv> <direct_spend.csv> <output.csv> \
+    [partner_report1.csv partner_report2.csv ...]
 ```
+
+**Optional partner_report CSVs:** When vendor_managed campaigns exist, pass one or more partner report CSVs as additional arguments. The script will:
+1. Run the standard query for non-vendor_managed campaigns
+2. Run a vendor_managed query calculating `partner_net_spend × (1 - margin/100)`
+3. Merge both results into a single output CSV
 
 **For detailed script version comparison, parameter descriptions, and usage examples, see:**
 **[Scripts Usage Guide](references/scripts-usage-guide.md)**
