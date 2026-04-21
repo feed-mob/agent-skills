@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from db import (
     add_keyword,
+    build_story_key,
     get_articles,
     get_active_keywords,
     insert_article,
@@ -37,6 +38,7 @@ SCORING_PROMPT_TEMPLATE = """# Article Relevance Scoring
 {{
   "score": <integer 0-10>,
   "is_new_insight": <boolean>,
+  "story_status": "<new|continuation|duplicate>",
   "core_points": ["point 1", "point 2", "point 3"],
   "reasoning": "<brief explanation of the score>",
   "suggested_keywords": ["keyword1", "keyword2"]
@@ -142,6 +144,7 @@ def parse_scoring_response(response: str) -> Dict[str, Any]:
     default = {
         "score": 5,
         "is_new_insight": True,
+        "story_status": "new",
         "core_points": [],
         "reasoning": "Failed to parse response",
         "suggested_keywords": [],
@@ -160,6 +163,10 @@ def parse_scoring_response(response: str) -> Dict[str, Any]:
         result = default.copy()
         result["score"] = min(10, max(0, int(data.get("score", 5))))
         result["is_new_insight"] = data.get("is_new_insight", True)
+        result["story_status"] = data.get(
+            "story_status",
+            "new" if result["is_new_insight"] else "duplicate",
+        )
         result["core_points"] = data.get("core_points", [])[:5]  # Max 5 points
         result["reasoning"] = data.get("reasoning", "")
         result["suggested_keywords"] = data.get("suggested_keywords", [])
@@ -231,9 +238,9 @@ def get_analysis_instructions(
     Returns:
         Dict with instructions
     """
-    # Get recent unanalyzed articles
-    articles = get_articles(project_root, topic, min_score=0, days=1, limit=50)
-    unanalyzed = [a for a in articles if not a.analyzed_at]
+    # Get recent unanalyzed articles (including those with NULL scores)
+    articles = get_articles(project_root, topic, min_score=0, days=7, limit=50, include_unanalyzed=True)
+    unanalyzed = [a for a in articles if not a.analyzed_at or a.relevance_score is None or a.relevance_score == 0]
 
     if not unanalyzed:
         return {"status": "no_articles", "message": "No unanalyzed articles found"}
@@ -273,6 +280,7 @@ def get_analysis_instructions(
                 "article_id": <id>,
                 "relevance_score": <0-10>,
                 "is_new_insight": <boolean>,
+                "story_status": "<new|continuation|duplicate>",
                 "core_points": ["point1", "point2", ...],
                 "reasoning": "<brief explanation>",
                 "suggested_keywords": ["keyword1", ...]
@@ -331,16 +339,25 @@ def store_analysis(
                 UPDATE articles SET
                     relevance_score = ?,
                     is_new_insight = ?,
+                    story_status = ?,
                     core_points = ?,
                     reasoning = ?,
+                    story_key = ?,
                     analyzed_at = ?
                 WHERE id = ?
                 """,
                 (
                     score,
                     1 if result.get("is_new_insight", True) else 0,
+                    result.get(
+                        "story_status",
+                        "new" if result.get("is_new_insight", True) else "duplicate",
+                    ),
                     json.dumps(result.get("core_points", [])),
                     result.get("reasoning", ""),
+                    build_story_key(
+                        result.get("title", ""), result.get("core_points", [])
+                    ),
                     datetime.now().isoformat(),
                     article_id,
                 ),
