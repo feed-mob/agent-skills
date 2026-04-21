@@ -24,7 +24,7 @@ An autonomous intelligence aggregator that discovers, filters, and analyzes topi
 | `/feed-agent [topic]` | Run full pipeline: scout → fetch → analyze → report |
 | `/feed-agent set-topic [topic]` | Configure the tracking topic |
 | `/feed-agent scout` | Run discovery only (find new sources) |
-| `/feed-agent report` | Generate report from cached data |
+| `/feed-agent report [--as-of-date YYYY-MM-DD]` | Refresh data, analyze, and generate a 7-day date-anchored report |
 | `/feed-agent sources` | List active and candidate sources |
 | `/feed-agent evolve` | Run self-evolution (prune/promote sources) |
 
@@ -92,13 +92,19 @@ Articles scoring < 7 are filtered out.
 Create markdown intelligence report:
 
 ```bash
-python3 scripts/reporter.py --project-root . --topic "{topic}" --output reports/{topic}/{date}.md
+python3 scripts/reporter.py --project-root . --topic "{topic}" --output reports/{topic}/{date}.md --as-of-date {date} --window-days 7
 ```
 
 Output structure:
 - Core Insights (Top insights from promoted articles)
 - Detailed Analysis (Full analysis of each article)
 - Self-Evolution (Source quality updates and keyword adjustments)
+
+Report generation rules:
+- Reports are date-anchored to the requested `--as-of-date`.
+- The default coverage window is the previous 7 days, inclusive.
+- Article freshness is determined from `published_at` when available, with `fetched_at` as fallback.
+- Stories already shown in earlier reports are hidden by default unless analysis marks the new coverage as a meaningful continuation.
 
 ### Step 6: Self-Evolve
 
@@ -135,6 +141,16 @@ python3 scripts/scout.py --project-root . --topic "{topic}" --verbose
 ```
 
 Outputs discovered candidates to console and saves to `candidates.json`.
+
+## Workflow: `/feed-agent report [--as-of-date YYYY-MM-DD]`
+
+Generate a fresh daily report for the target date:
+
+```bash
+python3 scripts/pipeline.py --project-root . --action report --topic "{topic}" --as-of-date {date} --window-days 7
+```
+
+This workflow refreshes sources, analyzes newly fetched items, and produces a report covering the inclusive 7-day window ending on `{date}`.
 
 ## Workflow: `/feed-agent sources`
 
@@ -329,3 +345,17 @@ This is a long-running batch task. Do not expect synchronous results; use approp
 | All articles filtered | Report mentions filter rate, suggest lowering threshold |
 | No new articles | Check `last_fetched` timestamp, report stale sources |
 | Scout finds no candidates | User may need to adjust topic keywords |
+
+## Changelog
+
+### 2026-04-21 - Bug Fixes
+
+**Fixed:**
+- **Database schema migration** - `_ensure_article_columns()` now properly adds missing columns (`published_at`, `story_key`, `story_status`) on database init
+- **Analyzer article retrieval** - Added `include_unanalyzed` parameter to `get_articles()` to properly fetch articles pending analysis (with NULL or 0 relevance_score)
+- **Date parsing fallback** - `parse_date()` in fetcher now defaults to current time if no date found in feed entry, ensuring `published_at` is always set
+- **Article insertion** - `insert_article()` now ensures `published_at` is always set with fallback to current time
+- **Extended analysis window** - Changed from 1 day to 7 days for finding unanalyzed articles to capture more content
+
+**Impact:**
+These fixes resolve the "no such column" errors and ensure articles are properly fetched, analyzed, and included in reports even when RSS feeds lack proper date metadata.

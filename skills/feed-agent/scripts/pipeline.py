@@ -162,7 +162,11 @@ def add_manual_source(
 
 
 def run_pipeline(
-    project_root: Path, topic: str = None, action: str = "full"
+    project_root: Path,
+    topic: str = None,
+    action: str = "full",
+    as_of_date: str | None = None,
+    window_days: int = 7,
 ) -> Dict[str, Any]:
     """Run the complete feed-agent pipeline.
 
@@ -199,7 +203,7 @@ def run_pipeline(
                 }
             )
 
-    if action in ["full", "fetch"]:
+    if action in ["full", "fetch", "report"]:
         # Fetch content from sources
         steps.append(
             {
@@ -208,7 +212,7 @@ def run_pipeline(
             }
         )
 
-    if action in ["full", "analyze"]:
+    if action in ["full", "analyze", "report"]:
         # Analyze and score articles
         threshold = config.get("scoring", {}).get("threshold", 7)
         steps.append(
@@ -220,17 +224,22 @@ def run_pipeline(
 
     if action in ["full", "report"]:
         # Generate report
+        target_date = as_of_date or datetime.now().strftime("%Y-%m-%d")
         report_path = (
             project_root
             / "reports"
             / topic.replace(" ", "_").lower()
-            / f"{datetime.now().strftime('%Y-%m-%d')}.md"
+            / f"{target_date}.md"
         )
         steps.append(
             {
                 "step": "report",
                 "report_path": str(report_path),
-                "instructions": f"Generate report using reporter.py --topic {topic} --output {report_path}",
+                "instructions": (
+                    "Generate report using reporter.py "
+                    f"--topic \"{topic}\" --output {report_path} "
+                    f"--as-of-date {target_date} --window-days {window_days}"
+                ),
             }
         )
 
@@ -366,6 +375,15 @@ def main():
     )
     parser.add_argument("--url", help="URL for add-source action")
     parser.add_argument("--name", help="Name for add-source action")
+    parser.add_argument(
+        "--as-of-date", help="Target date for date-anchored reporting (YYYY-MM-DD)"
+    )
+    parser.add_argument(
+        "--window-days",
+        type=int,
+        default=7,
+        help="Inclusive day window ending on --as-of-date",
+    )
 
     args = parser.parse_args()
 
@@ -403,7 +421,13 @@ def main():
         print(json.dumps(stats, indent=2))
 
     else:
-        result = run_pipeline(args.project_root, args.topic, args.action)
+        result = run_pipeline(
+            args.project_root,
+            args.topic,
+            args.action,
+            args.as_of_date,
+            args.window_days,
+        )
         print(json.dumps(result, indent=2, default=str))
 
 

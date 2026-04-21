@@ -35,8 +35,9 @@ def strip_html(text: str) -> str:
     return clean
 
 
-def parse_date(entry: dict) -> Optional[str]:
-    """Parse date from feed entry."""
+def parse_date(entry: dict) -> str:
+    """Parse date from feed entry. Returns ISO format datetime string.
+    Falls back to current time if no date found."""
     for field in ["published_parsed", "updated_parsed", "created_parsed"]:
         if hasattr(entry, field) and getattr(entry, field):
             try:
@@ -49,9 +50,18 @@ def parse_date(entry: dict) -> Optional[str]:
 
     for field in ["published", "updated", "created"]:
         if hasattr(entry, field) and getattr(entry, field):
-            return getattr(entry, field)
+            val = getattr(entry, field)
+            # Try to parse common date formats
+            try:
+                # If it's already an ISO format string
+                if 'T' in val:
+                    return val
+                return val
+            except:
+                return val
 
-    return None
+    # Fallback to current time
+    return datetime.now().isoformat()
 
 
 def normalize_entry(entry: dict, source: Source) -> dict:
@@ -272,6 +282,7 @@ def store_articles(
             title=article_data.get("title", ""),
             content=article_data.get("content", ""),
             summary=article_data.get("summary", ""),
+            published_at=article_data.get("published_at"),
         )
 
         try:
@@ -280,6 +291,9 @@ def store_articles(
                 stats["stored"] += 1
             else:
                 stats["duplicates"] += 1
+
+            if article.source_id:
+                update_source_fetched(project_root, topic, article.source_id)
         except Exception as e:
             stats["errors"] += 1
             print(f"Error storing article: {e}", file=sys.stderr)

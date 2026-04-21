@@ -25,13 +25,20 @@
     },
     {
       "id": 4,
-      "name": "generate-intelligence-report",
-      "prompt": "Generate today's intelligence report for my 'DevOps Tools' topic.",
-      "expected_output": "The skill should run the reporter script, format articles with score >= 7 into the markdown template with Core Insights, Detailed Analysis, and Self-Evolution sections, and display the report.",
+      "name": "generate-date-anchored-report",
+      "prompt": "Generate the April 17, 2026 intelligence report for my 'DevOps Tools' topic. Use a 7-day window ending on that date and avoid repeating stories that were already shown in previous reports unless there is a meaningful update.",
+      "expected_output": "The skill should refresh data, analyze the fetched items, and run the reporter with an as-of date. The report should show the coverage window, use the feed-agent markdown template, and suppress already-reported stories by default.",
       "files": []
     },
     {
       "id": 5,
+      "name": "suppress-repeat-story-across-days",
+      "prompt": "I generated an AI Advertising report yesterday. Create today's report, but do not repeat the same story from another outlet unless the new article is clearly a continuation with materially new information.",
+      "expected_output": "The skill should rely on report history and story-level dedupe so repeated coverage from a different source is hidden, while meaningful continuations can still appear.",
+      "files": []
+    },
+    {
+      "id": 6,
       "name": "add-custom-source",
       "prompt": "Add 'https://openai.com/blog/rss.xml' as a manual source for my 'AI Agents' topic.",
       "expected_output": "The skill should run pipeline.py --action add-source, store the source in the database with status 'active', and confirm the source was added.",

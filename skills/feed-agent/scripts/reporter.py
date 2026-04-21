@@ -11,11 +11,16 @@ from typing import List, Dict, Any
 sys.path.insert(0, str(Path(__file__).parent))
 
 from db import (
+    build_story_key,
+    create_report_run,
     get_active_keywords,
     get_articles,
     get_candidate_keywords,
+    get_date_window,
+    get_reported_story_keys,
     get_sources,
     get_stats,
+    record_report_items,
     Article,
 )
 
@@ -23,6 +28,8 @@ from db import (
 REPORT_TEMPLATE = """# {topic} Intelligence Report
 
 **Date:** {date}  
+**As Of:** {as_of_date} | **Coverage Window:** {window_start} to {window_end}  
+**Freshness Basis:** published date (fallback: fetch date)  
 **Sources Scanned:** {sources_count} | **Articles Found:** {articles_count} | **Promoted (>={threshold}):** {promoted_count}
 
 ---
@@ -244,8 +251,43 @@ def format_pending_actions(
     return "\n".join(actions)
 
 
+def select_report_articles(
+    articles: List[Article], reported_story_keys: set[str], include_repeats: bool = False
+) -> List[Article]:
+    """Choose the canonical article for each reportable story."""
+    selected = []
+    seen_story_keys = set()
+
+    for article in articles:
+        article.story_key = article.story_key or build_story_key(
+            article.title, article.core_points
+        )
+        article.story_status = article.story_status or "new"
+
+        if article.story_key in seen_story_keys:
+            continue
+        if (
+            not include_repeats
+            and article.story_key in reported_story_keys
+            and article.story_status != "continuation"
+        ):
+            continue
+
+        seen_story_keys.add(article.story_key)
+        selected.append(article)
+
+    return selected
+
+
 def generate_report(
-    topic: str, project_root: Path, threshold: int = 7, output_path: Path = None
+    topic: str,
+    project_root: Path,
+    threshold: int = 7,
+    output_path: Path = None,
+    as_of_date: str | None = None,
+    window_days: int = 7,
+    include_repeats: bool = False,
+    persist: bool = True,
 ) -> str:
     """Generate the markdown intelligence report.
 
@@ -265,7 +307,19 @@ def generate_report(
         identify_promote_candidates,
     )
 
-    articles = get_articles(project_root, topic, min_score=threshold, days=1, limit=50)
+    window_start, window_end = get_date_window(as_of_date, window_days)
+    window_articles = get_articles(
+        project_root,
+        topic,
+        min_score=threshold,
+        days=window_days,
+        limit=100,
+        as_of_date=window_end,
+    )
+    reported_story_keys = get_reported_story_keys(project_root, topic, before_date=window_end)
+    articles = select_report_articles(
+        window_articles, reported_story_keys, include_repeats=include_repeats
+    )
     sources = get_sources(project_root, topic)
     stats = get_stats(project_root, topic)
 
@@ -291,8 +345,11 @@ def generate_report(
     report = REPORT_TEMPLATE.format(
         topic=topic.title(),
         date=datetime.now().strftime("%Y-%m-%d"),
+        as_of_date=window_end,
+        window_start=window_start,
+        window_end=window_end,
         sources_count=stats.get("active_sources", 0),
-        articles_count=stats.get("total_articles", 0),
+        articles_count=len(window_articles),
         promoted_count=len(articles),
         threshold=threshold,
         insights_table=insights_table,
@@ -307,6 +364,12 @@ def generate_report(
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(report)
 
+    if persist:
+        report_id = create_report_run(
+            project_root, topic, window_end, window_start, window_end, threshold
+        )
+        record_report_items(project_root, topic, report_id, articles)
+
     return report
 
 
@@ -320,25 +383,65 @@ def main():
         "--threshold", type=int, default=7, help="Minimum score threshold"
     )
     parser.add_argument("--output", type=Path, help="Output path for report")
+    parser.add_argument(
+        "--as-of-date", help="Target date for the report window (YYYY-MM-DD)"
+    )
+    parser.add_argument(
+        "--window-days",
+        type=int,
+        default=7,
+        help="Inclusive day window ending on --as-of-date",
+    )
+    parser.add_argument(
+        "--include-repeats",
+        action="store_true",
+        help="Include stories that appeared in earlier reports",
+    )
 
     args = parser.parse_args()
+
+    target_date = args.as_of_date or datetime.now().strftime("%Y-%m-%d")
 
     if not args.output:
         args.output = (
             args.project_root
             / "reports"
             / args.topic.replace(" ", "_").lower()
-            / f"{datetime.now().strftime('%Y-%m-%d')}.md"
+            / f"{target_date}.md"
         )
 
-    report = generate_report(args.topic, args.project_root, args.threshold, args.output)
+    window_articles = get_articles(
+        args.project_root,
+        args.topic,
+        min_score=args.threshold,
+        days=args.window_days,
+        limit=100,
+        as_of_date=target_date,
+    )
+    prior_story_keys = get_reported_story_keys(
+        args.project_root, args.topic, before_date=target_date
+    )
+    selected_articles = select_report_articles(
+        window_articles,
+        prior_story_keys,
+        include_repeats=args.include_repeats,
+    )
+    report = generate_report(
+        args.topic,
+        args.project_root,
+        args.threshold,
+        args.output,
+        as_of_date=target_date,
+        window_days=args.window_days,
+        include_repeats=args.include_repeats,
+    )
 
     result = {
         "report_path": str(args.output),
         "generated_at": datetime.now().isoformat(),
-        "article_count": len(
-            get_articles(args.project_root, args.topic, min_score=args.threshold)
-        ),
+        "as_of_date": target_date,
+        "window_days": args.window_days,
+        "article_count": len(selected_articles),
     }
 
     print(json.dumps(result, indent=2))

@@ -8,8 +8,11 @@ This template defines the structure of generated intelligence reports.
 |----------|-------------|
 | `{topic}` | Topic name (capitalized) |
 | `{date}` | Report date (YYYY-MM-DD) |
+| `{as_of_date}` | Target date the report is anchored to |
+| `{window_start}` | Start of the inclusive reporting window |
+| `{window_end}` | End of the inclusive reporting window |
 | `{sources_count}` | Number of active sources |
-| `{articles_count}` | Total articles found |
+| `{articles_count}` | Total promoted articles found in the coverage window before repeat suppression |
 | `{promoted_count}` | Articles meeting threshold |
 | `{threshold}` | Minimum score threshold |
 | `{insights_table}` | Markdown table of core insights |
@@ -24,6 +27,8 @@ This template defines the structure of generated intelligence reports.
 # {topic} Intelligence Report
 
 **Date:** {date}  
+**As Of:** {as_of_date} | **Coverage Window:** {window_start} to {window_end}  
+**Freshness Basis:** published date (fallback: fetch date)  
 **Sources Scanned:** {sources_count} | **Articles Found:** {articles_count} | **Promoted (>={threshold}):** {promoted_count}
 
 ---
@@ -66,6 +71,7 @@ This template defines the structure of generated intelligence reports.
 - Maximum 10 insights
 - Each insight is the first core point from a promoted article
 - "New?" column shows Yes for newly discovered insights
+- Prefer one canonical article per story so the same development is not repeated from multiple outlets
 - Sorted by relevance score (highest first)
 
 ### Detailed Analysis
@@ -92,13 +98,22 @@ This template defines the structure of generated intelligence reports.
 - Sources to review: Low-performing active sources
 - Keywords to add: Frequently appearing terms in high-scoring articles
 
+## Freshness Rules
+
+- Reports are anchored to a requested target date rather than "whatever was fetched most recently".
+- The default reporting window is 7 days ending on `{as_of_date}`.
+- Use article `published_at` whenever available; only fall back to `fetched_at` when the feed omits a publication date.
+- Hide stories that already appeared in earlier reports unless the newer coverage is classified as a meaningful continuation.
+
 ## Example Output
 
 ```markdown
 # AI Agents Intelligence Report
 
 **Date:** 2026-03-23  
-**Sources Scanned:** 12 | **Articles Found:** 45 | **Promoted (>=7):** 18
+**As Of:** 2026-03-23 | **Coverage Window:** 2026-03-17 to 2026-03-23  
+**Freshness Basis:** published date (fallback: fetch date)  
+**Sources Scanned:** 12 | **Articles Found:** 18 | **Promoted (>=7):** 18
 
 ---
 

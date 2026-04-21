@@ -3,8 +3,9 @@
 
 import argparse
 import json
+import re
 import sqlite3
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass
@@ -69,8 +70,35 @@ def init_db(project_root: Path, topic: str = None) -> Path:
             core_points TEXT,
             reasoning TEXT,
             fetched_at TEXT DEFAULT (datetime('now')),
+            published_at TEXT,
             analyzed_at TEXT,
+            story_key TEXT,
+            story_status TEXT DEFAULT 'new',
             FOREIGN KEY (source_id) REFERENCES sources(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS reports (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            topic TEXT NOT NULL,
+            as_of_date TEXT NOT NULL,
+            window_start TEXT NOT NULL,
+            window_end TEXT NOT NULL,
+            threshold INTEGER NOT NULL,
+            generated_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS report_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            report_id INTEGER NOT NULL,
+            article_id INTEGER NOT NULL,
+            topic TEXT NOT NULL,
+            story_key TEXT NOT NULL,
+            article_url TEXT NOT NULL,
+            story_status TEXT DEFAULT 'new',
+            added_at TEXT DEFAULT (datetime('now')),
+            UNIQUE(report_id, article_id),
+            FOREIGN KEY (report_id) REFERENCES reports(id),
+            FOREIGN KEY (article_id) REFERENCES articles(id)
         );
 
         CREATE TABLE IF NOT EXISTS evolution_log (
@@ -104,14 +132,39 @@ def init_db(project_root: Path, topic: str = None) -> Path:
         CREATE INDEX IF NOT EXISTS idx_articles_topic ON articles(topic);
         CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(relevance_score);
         CREATE INDEX IF NOT EXISTS idx_articles_fetched ON articles(fetched_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_reports_topic_date ON reports(topic, as_of_date);
+        CREATE INDEX IF NOT EXISTS idx_report_items_topic_story ON report_items(topic, story_key);
     """)
 
+    _ensure_article_columns(cursor)
     _ensure_keyword_columns(cursor)
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_articles_published ON articles(published_at DESC)"
+    )
+    cursor.execute(
+        "CREATE INDEX IF NOT EXISTS idx_articles_story_key ON articles(story_key)"
+    )
 
     conn.commit()
     conn.close()
 
     return db_path
+
+
+def _ensure_article_columns(cursor: sqlite3.Cursor) -> None:
+    """Backfill article/report columns for existing databases."""
+    cursor.execute("PRAGMA table_info(articles)")
+    existing_columns = {row[1] for row in cursor.fetchall()}
+
+    required_columns = {
+        "published_at": "TEXT",
+        "story_key": "TEXT",
+        "story_status": "TEXT DEFAULT 'new'",
+    }
+
+    for column, definition in required_columns.items():
+        if column not in existing_columns:
+            cursor.execute(f"ALTER TABLE articles ADD COLUMN {column} {definition}")
 
 
 def _ensure_keyword_columns(cursor: sqlite3.Cursor) -> None:
@@ -167,10 +220,28 @@ class Article:
     core_points: List[str] = None
     reasoning: str = ""
     analyzed_at: Optional[str] = None
+    published_at: Optional[str] = None
+    story_key: str = ""
+    story_status: str = "new"
 
     def __post_init__(self):
         if self.core_points is None:
             self.core_points = []
+
+
+def build_story_key(title: str, core_points: Optional[List[str]] = None) -> str:
+    """Build a stable story key from the strongest article summary text."""
+    seed = (core_points or [None])[0] or title or "untitled"
+    normalized = re.sub(r"[^a-z0-9]+", "-", seed.lower()).strip("-")
+    return normalized[:120] or "untitled"
+
+
+def get_date_window(as_of_date: str | None = None, days: int = 1) -> tuple[str, str]:
+    """Get an inclusive date window ending on the target date."""
+    target = date.fromisoformat(as_of_date) if as_of_date else datetime.now().date()
+    span = max(days, 1) - 1
+    window_start = target - timedelta(days=span)
+    return window_start.isoformat(), target.isoformat()
 
 
 def upsert_source(project_root: Path, source: Source) -> int:
@@ -302,12 +373,21 @@ def insert_article(project_root: Path, article: Article) -> int:
     conn = get_connection(db_path)
     cursor = conn.cursor()
 
+    # Ensure published_at is set
+    published_at = article.published_at
+    if not published_at:
+        from datetime import datetime
+        published_at = datetime.now().isoformat()
+
     try:
         cursor.execute(
             """
-            INSERT INTO articles (source_id, topic, url, title, content, summary, 
-                                  relevance_score, is_new_insight, core_points, reasoning)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO articles (
+                source_id, topic, url, title, content, summary,
+                relevance_score, is_new_insight, core_points, reasoning,
+                analyzed_at, published_at, story_key, story_status
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 article.source_id,
@@ -320,6 +400,10 @@ def insert_article(project_root: Path, article: Article) -> int:
                 1 if article.is_new_insight else 0,
                 json.dumps(article.core_points),
                 article.reasoning,
+                article.analyzed_at,
+                published_at,
+                article.story_key or build_story_key(article.title, article.core_points),
+                article.story_status,
             ),
         )
         article_id = cursor.lastrowid
@@ -332,26 +416,52 @@ def insert_article(project_root: Path, article: Article) -> int:
 
 
 def get_articles(
-    project_root: Path, topic: str, min_score: int = 7, days: int = 1, limit: int = 50
+    project_root: Path,
+    topic: str,
+    min_score: int = 7,
+    days: int = 1,
+    limit: int = 50,
+    as_of_date: Optional[str] = None,
+    include_unanalyzed: bool = False,
 ) -> List[Article]:
-    """Get articles for a topic with minimum score."""
+    """Get articles for a topic with minimum score.
+    
+    Args:
+        include_unanalyzed: If True, also include articles with NULL/0 relevance_score
+    """
     db_path = get_db_path(project_root, topic)
     if not db_path.exists():
         return []
 
+    window_start, window_end = get_date_window(as_of_date, days)
+
     conn = get_connection(db_path)
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT * FROM articles 
-        WHERE topic = ? AND relevance_score >= ?
-        AND date(fetched_at) >= date('now', ? || ' days')
-        ORDER BY fetched_at DESC
-        LIMIT ?
-        """,
-        (topic, min_score, f"-{days}", limit),
-    )
+    if include_unanalyzed:
+        # Include both scored articles meeting threshold AND unanalyzed articles
+        cursor.execute(
+            """
+            SELECT * FROM articles 
+            WHERE topic = ? 
+            AND (relevance_score >= ? OR relevance_score IS NULL OR relevance_score = 0)
+            AND COALESCE(date(published_at), date(fetched_at)) BETWEEN date(?) AND date(?)
+            ORDER BY COALESCE(datetime(published_at), datetime(fetched_at)) DESC, relevance_score DESC
+            LIMIT ?
+            """,
+            (topic, min_score, window_start, window_end, limit),
+        )
+    else:
+        cursor.execute(
+            """
+            SELECT * FROM articles 
+            WHERE topic = ? AND relevance_score >= ?
+            AND COALESCE(date(published_at), date(fetched_at)) BETWEEN date(?) AND date(?)
+            ORDER BY COALESCE(datetime(published_at), datetime(fetched_at)) DESC, relevance_score DESC
+            LIMIT ?
+            """,
+            (topic, min_score, window_start, window_end, limit),
+        )
 
     rows = cursor.fetchall()
     conn.close()
@@ -370,9 +480,98 @@ def get_articles(
             core_points=json.loads(row["core_points"]) if row["core_points"] else [],
             reasoning=row["reasoning"],
             analyzed_at=row["analyzed_at"],
+            published_at=row["published_at"],
+            story_key=row["story_key"] or build_story_key(
+                row["title"], json.loads(row["core_points"]) if row["core_points"] else []
+            ),
+            story_status=row["story_status"] or "new",
         )
         for row in rows
     ]
+
+
+def create_report_run(
+    project_root: Path,
+    topic: str,
+    as_of_date: str,
+    window_start: str,
+    window_end: str,
+    threshold: int,
+) -> int:
+    """Create a report run record."""
+    db_path = get_db_path(project_root, topic)
+    init_db(project_root, topic)
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        INSERT INTO reports (topic, as_of_date, window_start, window_end, threshold)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (topic, as_of_date, window_start, window_end, threshold),
+    )
+    report_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return report_id
+
+
+def record_report_items(
+    project_root: Path, topic: str, report_id: int, articles: List[Article]
+) -> None:
+    """Persist the stories included in a report."""
+    if not articles:
+        return
+
+    db_path = get_db_path(project_root, topic)
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.executemany(
+        """
+        INSERT OR IGNORE INTO report_items (
+            report_id, article_id, topic, story_key, article_url, story_status
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        [
+            (
+                report_id,
+                article.id,
+                topic,
+                article.story_key or build_story_key(article.title, article.core_points),
+                article.url,
+                article.story_status or "new",
+            )
+            for article in articles
+            if article.id is not None
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_reported_story_keys(
+    project_root: Path, topic: str, before_date: str
+) -> set[str]:
+    """Get story keys that already appeared in earlier reports."""
+    db_path = get_db_path(project_root, topic)
+    if not db_path.exists():
+        return set()
+
+    conn = get_connection(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT DISTINCT ri.story_key
+        FROM report_items ri
+        INNER JOIN reports r ON r.id = ri.report_id
+        WHERE ri.topic = ? AND date(r.as_of_date) < date(?)
+        """,
+        (topic, before_date),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    return {row["story_key"] for row in rows if row["story_key"]}
 
 
 def log_evolution(

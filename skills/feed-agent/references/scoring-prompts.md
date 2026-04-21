@@ -21,6 +21,7 @@ This file contains the prompt templates used for article relevance scoring.
 {
   "score": <integer 0-10>,
   "is_new_insight": <boolean>,
+  "story_status": "<new|continuation|duplicate>",
   "core_points": ["point 1", "point 2", "point 3"],
   "reasoning": "<brief explanation of the score>",
   "suggested_keywords": ["keyword1", "keyword2"]
