@@ -548,6 +548,31 @@ cat ./tmp/analysis/06_top50_anomalies.csv
 
 ---
 
+### 5. compare_client_report_spend_datafusion.py
+
+Compare client report `gross_spend` against direct spend `feedmob_gross_spend`.
+
+**Features:**
+- ✅ Auto-detects `click_url_id` data → Click URL or Campaign level comparison
+- ✅ Handles missing/empty direct spend file
+- ✅ Auto-installs dependencies
+
+**Usage:**
+```bash
+python3 compare_client_report_spend_datafusion.py \
+    ./tmp/client_report_spends.csv \
+    ./tmp/direct_spends.csv \
+    ./tmp/client_report_comparison.csv
+```
+
+**Comparison Modes:**
+- **Click URL level**: `click_url_id` has data → joins on `click_url_id + date`
+- **Campaign level**: `click_url_id` empty → aggregates by `campaign_name`
+
+**Output:** CSV with `client_gross_spend`, `feedmob_gross_spend`, `difference`, `difference_pct`, `status` (✅/⚠️/🚨)
+
+---
+
 ## Maintainers
 
 FeedMob Reporting Team
