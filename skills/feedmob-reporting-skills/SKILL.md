@@ -58,6 +58,7 @@ Before diving into detailed workflows, understanding available automation script
 |--------|------------------|-------|---------------------|
 | `calculate_gross_spend_datafusion.py` ⭐⭐ | **All clients** | ~0.1s | **Calculate comparison (Step 3.5, recommended)** |
 | `analyze_gross_spend_datafusion.py` ⭐⭐ | **All clients** | ~0.1s | **Generate summary (Step 3.6, mandatory)** |
+| `compare_client_report_spend_datafusion.py` | **All clients** | ~0.1s | **Client report vs direct spend comparison** |
 | `calculate_gross_spend.py` | **All clients** | ~0.5s | Backup/zero-dependency environment |
 
 **Important Notes:**
@@ -446,6 +447,20 @@ Use this workflow when client uses AppsFlyer as MMP (instead of Singular or Adju
 
 ---
 
+### 4. Client Report Spend Comparison Workflow
+
+Compare client-provided `gross_spend` against `feedmob_gross_spend` directly — no event calculation needed.
+
+**Steps:**
+1. Fetch client report: `get_client_report_spend_report_names()` → `get_client_report_spends()`
+2. Fetch direct spends: `get_direct_spends()`
+3. Run: `python3 scripts/compare_client_report_spend_datafusion.py <client_report.csv> <direct_spend.csv> <output.csv>`
+
+**For detailed script usage, comparison modes, and output format, see:**
+**[Client Report Comparison Guide](references/client-report-comparison-guide.md)**
+
+---
+
 ## Reference Documentation
 
 The following reference documents provide detailed workflow guides, best practices, and troubleshooting solutions:
@@ -462,6 +477,7 @@ The following reference documents provide detailed workflow guides, best practic
 - **[AppsFlyer MMP Client Workflow](references/appsflyer-mmp-workflow.md)** - Handling clients using AppsFlyer MMP
 
 ### Tools and Troubleshooting
+- **[Client Report Comparison Guide](references/client-report-comparison-guide.md)** - Client report vs direct spend comparison
 - **[MCP Tools Reference](references/mcp_tools.md)** - Detailed descriptions of all available MCP tools
 - **[Troubleshooting Guide](references/troubleshooting.md)** - Common issue solutions
 
