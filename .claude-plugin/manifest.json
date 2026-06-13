@@ -26,6 +26,11 @@
       "path": "skills/ai-news-daily"
     },
     {
+      "name": "coin-news-openclaw",
+      "description": "Collect and summarize cryptocurrency and coin market news with OpenClaw-friendly workflows. Use when users request coin news, crypto news, token-specific news, daily market briefings, or a replacement for Dify-based news aggregation. Supports configurable sources, keyword scoring, source weighting, deduplication, and structured JSON output for downstream tuning.",
+      "path": "skills/coin-news-openclaw"
+    },
+    {
       "name": "gemini-image-generator",
       "description": "Generate, edit, or transform images with Gemini using bundled Python scripts (Flash or Pro) including aspect ratio, resolution, image-to-image edits, logo overlays, and reference images. Use when users request image generation, image edits, image-to-image transformations, logo placement, or specific aspect ratios or resolutions.",
       "path": "skills/gemini-image-generator"

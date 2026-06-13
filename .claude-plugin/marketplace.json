@@ -38,6 +38,15 @@
       ]
     },
     {
+      "name": "coin-news-tools",
+      "description": "Crypto and coin news aggregation tools with configurable sources and scoring for OpenClaw workflows",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/coin-news-openclaw"
+      ]
+    },
+    {
       "name": "image-generation-tools",
       "description": "Image generation and editing tools",
       "source": "./",
