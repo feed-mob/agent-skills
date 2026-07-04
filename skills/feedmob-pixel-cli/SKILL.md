@@ -17,20 +17,26 @@ This skill is agent-neutral. Claude Code, Codex, and other Agent Skills-compatib
 
 ## Start
 
-Verify the command and setup first:
+Verify the command first:
 
 ```bash
 command -v fpc
-fpc doctor
 ```
 
-If `fpc` is missing on this machine, install it from the local CLI repo:
+If `fpc` is missing on this machine, recommend the npm package install:
 
 ```bash
-cd /Users/steven/Workspace/feedmob-ai/feedmob-pixel-cli
-pnpm install
-pnpm build
-npm install -g .
+npm install -g @feedmob/feedmob-pixel-cli
+command -v fpc
+fpc --version
+```
+
+If npm only prints `added packages`, continue with `fpc --help` or `fpc doctor`.
+
+Then check setup:
+
+```bash
+fpc doctor
 ```
 
 If `doctor` reports missing setup, ask the user to provide a Dashboard API token through a local environment variable or private env file:
