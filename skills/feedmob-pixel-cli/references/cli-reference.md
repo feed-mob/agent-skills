@@ -40,12 +40,27 @@ fpc --help
 fpc doctor
 ```
 
-`fpc` checks the latest npm version on each run and prints update notices to stderr. To update manually:
+`fpc` checks the latest npm version on each run and prints update notices to stderr.
+
+Check whether the globally installed package is outdated:
+
+```bash
+fpc --version
+npm outdated -g @feedmob/feedmob-pixel-cli
+```
+
+No output from `npm outdated` means the global install is current. If npm prints a row for `@feedmob/feedmob-pixel-cli`, update and confirm the installed version:
 
 ```bash
 npm install -g @feedmob/feedmob-pixel-cli@latest
 fpc --version
 fpc doctor
+```
+
+To see the latest published version without comparing it to the installed version:
+
+```bash
+npm view @feedmob/feedmob-pixel-cli version
 ```
 
 ## Authentication And Config
@@ -111,6 +126,13 @@ Common filters:
 --registration-end YYYY-MM-DD
 --date-filter-mode and|or
 --max-attribution-hours <hours>
+```
+
+Summary-specific options:
+
+```bash
+--attributed-per-page <number>
+--attributed-max-pages <number>
 ```
 
 ## Date Modes
@@ -212,6 +234,23 @@ fpc summary get \
   --registration-date-mode auto \
   --impression-start 2026-06-01 \
   --impression-end 2026-06-30
+```
+
+The summary JSON includes dashboard totals, category counts, `attributionWindow`, and an `attributed` object. `attributed.records` contains attributed registration records from categories whose summary `assistedCount` is greater than zero.
+
+If `--max-attribution-hours` is omitted, `fpc` uses a 14-day attribution window (`336` hours). Explicit `--max-attribution-hours` values are reflected in `attributionWindow`.
+
+By default, `summary get` fetches all attributed record pages with `--attributed-per-page 500`. Use `--attributed-max-pages` to limit how many record pages are fetched per attributed category:
+
+```bash
+fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv tcl-tv \
+  --impression-start 2026-07-03 \
+  --impression-end 2026-07-03 \
+  --max-attribution-hours 72 \
+  --attributed-max-pages 1
 ```
 
 One records page:

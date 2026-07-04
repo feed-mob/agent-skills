@@ -69,7 +69,7 @@ Use `category.value` or `category.slug` from `categories list` for records and e
 
 ## Read Data
 
-Use `summary get` for totals and category breakdowns:
+Use `summary get` for totals, category breakdowns, the current attribution window, and attributed records:
 
 ```bash
 fpc summary get \
@@ -80,6 +80,8 @@ fpc summary get \
   --impression-start 2026-06-01 \
   --impression-end 2026-06-30
 ```
+
+Summary output includes `attributionWindow` and `attributed.records`. If `--max-attribution-hours` is omitted, `fpc` uses 14 days (`336` hours). For broad summary reads, cap attributed record fetching with `--attributed-max-pages N`.
 
 Use `records list` for category drill-down:
 
