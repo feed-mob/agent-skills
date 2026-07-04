@@ -1,6 +1,6 @@
 ---
 name: feedmob-pixel-cli
-description: Use when Codex needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
+description: Use when an AI agent needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
 ---
 
 # FeedMob Pixel CLI
@@ -10,6 +10,10 @@ description: Use when Codex needs to query FeedMob Pixel Dashboard data with the
 Use the installed `fpc` command as the safe read-only interface to the FeedMob Pixel Dashboard API. The CLI prints JSON to stdout by default, sends diagnostics to stderr, and can export category records to CSV.
 
 For command details and less-common options, read [references/cli-reference.md](references/cli-reference.md).
+
+## Compatibility
+
+This skill is agent-neutral. Claude Code, Codex, and other Agent Skills-compatible runtimes should use this `SKILL.md` plus the linked `references/` files. The `agents/openai.yaml` file is optional UI metadata for OpenAI/Codex surfaces; Claude Code can ignore it.
 
 ## Start
 
