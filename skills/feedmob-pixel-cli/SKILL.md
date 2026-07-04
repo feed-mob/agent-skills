@@ -114,10 +114,27 @@ Raw requests are limited to `GET` and `HEAD`. Do not attempt POST, PUT, PATCH, o
 
 ## Date Rules
 
-Default to `--registration-date-mode auto` with impression start/end dates. Use manual mode only when the user needs independent registration dates or `--date-filter-mode or`:
+Default to `--registration-date-mode auto` with impression start/end dates when the user is asking for the dashboard's linked impression/registration-date behavior.
+
+When the user specifies registration dates, set `--registration-date-mode manual`. Manual mode decouples impression dates from registration dates. Do not pass `false`; in `fpc`, `manual` is the supported way to disable auto-linking. If the user only wants registrations in a registration-date range, omit impression dates entirely:
 
 ```bash
 fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv lg-tv \
+  --registration-date-mode manual \
+  --registration-start 2026-06-01 \
+  --registration-end 2026-06-30
+```
+
+Use `--date-filter-mode or` only with manual mode, and only when the user needs impression and registration date filters combined with OR:
+
+```bash
+fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv lg-tv \
   --registration-date-mode manual \
   --impression-start 2026-06-01 \
   --impression-end 2026-06-30 \

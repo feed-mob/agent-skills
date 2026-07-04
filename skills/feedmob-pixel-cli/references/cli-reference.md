@@ -86,6 +86,50 @@ Common filters:
 --max-attribution-hours <hours>
 ```
 
+## Date Modes
+
+Use `--registration-date-mode auto` when the user wants the Dashboard's linked date behavior: pass impression dates and let the backend derive the registration date window.
+
+```bash
+fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv lg-tv \
+  --registration-date-mode auto \
+  --impression-start 2026-06-01 \
+  --impression-end 2026-06-30
+```
+
+Use `--registration-date-mode manual` whenever passing `--registration-start` or `--registration-end`. Manual mode decouples impression dates from registration dates. Do not pass `false`; `fpc` supports `auto` and `manual`.
+
+Registration-only range, with no impression-date filter:
+
+```bash
+fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv lg-tv \
+  --registration-date-mode manual \
+  --registration-start 2026-06-01 \
+  --registration-end 2026-06-30
+```
+
+Independent impression and registration ranges:
+
+```bash
+fpc summary get \
+  --advertiser chime \
+  --event-type registration \
+  --tv lg-tv \
+  --registration-date-mode manual \
+  --impression-start 2026-06-01 \
+  --impression-end 2026-06-30 \
+  --registration-start 2026-06-01 \
+  --registration-end 2026-06-30
+```
+
+Use `--date-filter-mode or` only with manual mode.
+
 CLI flag to API query mapping:
 
 | CLI flag | API query |
