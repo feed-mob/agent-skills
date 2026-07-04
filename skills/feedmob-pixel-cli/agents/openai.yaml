@@ -1,0 +1,4 @@
+interface:
+  display_name: "FeedMob Pixel CLI"
+  short_description: "Query Pixel Dashboard data with fpc"
+  default_prompt: "Use $feedmob-pixel-cli to query FeedMob Pixel Dashboard data safely with fpc."
