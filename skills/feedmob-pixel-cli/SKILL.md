@@ -1,6 +1,6 @@
 ---
 name: feedmob-pixel-cli
-description: Use when an AI agent needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
+description: Use when an AI agent needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, Direct CTV attributed registration interpretation, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
 ---
 
 # FeedMob Pixel CLI
@@ -69,7 +69,7 @@ Use `category.value` or `category.slug` from `categories list` for records and e
 
 ## Read Data
 
-Use `summary get` for totals, category breakdowns, the current attribution window, and attributed records:
+Use `summary get` for totals, category breakdowns, the current attribution window, and Direct CTV attributed registration records:
 
 ```bash
 fpc summary get \
@@ -81,7 +81,9 @@ fpc summary get \
   --impression-end 2026-06-30
 ```
 
-Summary output includes `attributionWindow` and `attributed.records`. If `--max-attribution-hours` is omitted, `fpc` uses 14 days (`336` hours). For broad summary reads, cap attributed record fetching with `--attributed-max-pages N`.
+Summary output includes `attributionWindow` and an `attributed` object. `attributed.total` is the sum of Direct CTV category counts, such as `Direct - LG CTV` and `Direct - TCL CTV`; `attributed.records` contains records fetched from those Direct CTV categories. Do not treat `attributed.total` as `assistedTotal`: dashboard assisted and total registration figures remain `assistedTotal` and `totalRegistrations`.
+
+If `--max-attribution-hours` is omitted, `fpc` uses 14 days (`336` hours). For broad summary reads, cap attributed record fetching with `--attributed-max-pages N`.
 
 Use `records list` for category drill-down:
 
@@ -126,9 +128,11 @@ Raw requests are limited to `GET` and `HEAD`. Do not attempt POST, PUT, PATCH, o
 
 ## Date Rules
 
-Default to `--registration-date-mode auto` with impression start/end dates when the user is asking for the dashboard's linked impression/registration-date behavior.
+Use one date axis per command.
 
-When the user specifies registration dates, set `--registration-date-mode manual`. Manual mode decouples impression dates from registration dates. Do not pass `false`; in `fpc`, `manual` is the supported way to disable auto-linking. If the user only wants registrations in a registration-date range, omit impression dates entirely:
+When the user explicitly provides impression dates and does not provide registration dates, set `--registration-date-mode auto`, pass only impression start/end dates, and let the backend derive the registration date window.
+
+When the user explicitly provides registration dates, set `--registration-date-mode manual` and omit impression dates entirely. Registration dates take precedence if both date types appear in the request. Do not pass `false`; in `fpc`, `manual` is the supported way to disable auto-linking:
 
 ```bash
 fpc summary get \
@@ -140,20 +144,7 @@ fpc summary get \
   --registration-end 2026-06-30
 ```
 
-Use `--date-filter-mode or` only with manual mode, and only when the user needs impression and registration date filters combined with OR:
-
-```bash
-fpc summary get \
-  --advertiser chime \
-  --event-type registration \
-  --tv lg-tv \
-  --registration-date-mode manual \
-  --impression-start 2026-06-01 \
-  --impression-end 2026-06-30 \
-  --registration-start 2026-06-01 \
-  --registration-end 2026-06-30 \
-  --date-filter-mode or
-```
+Do not combine `--impression-start/--impression-end` with `--registration-start/--registration-end` in normal agent workflows. Do not use `--date-filter-mode` unless the user explicitly asks for a low-level API experiment.
 
 ## Safety Rules
 
