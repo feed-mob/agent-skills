@@ -21,6 +21,33 @@ fpc request head <path> --query key=value
 
 Output is always JSON on stdout. The legacy `--json` flag is a no-op and is not needed.
 
+## Install And Update
+
+Recommend installing the published npm package first:
+
+```bash
+npm install -g @feedmob/feedmob-pixel-cli
+command -v fpc
+fpc --version
+```
+
+The npm package is `@feedmob/feedmob-pixel-cli`; the installed command is `fpc`.
+
+Some npm versions hide successful install script output and only print `added packages`. If that happens, start with:
+
+```bash
+fpc --help
+fpc doctor
+```
+
+`fpc` checks the latest npm version on each run and prints update notices to stderr. To update manually:
+
+```bash
+npm install -g @feedmob/feedmob-pixel-cli@latest
+fpc --version
+fpc doctor
+```
+
 ## Authentication And Config
 
 Preferred local token setup:

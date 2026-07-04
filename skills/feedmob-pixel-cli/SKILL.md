@@ -1,6 +1,6 @@
 ---
 name: feedmob-pixel-cli
-description: Use when Codex needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
+description: Use when an AI agent needs to query FeedMob Pixel Dashboard data with the `fpc` / feedmob-pixel-cli command, including setup checks, advertiser/event type/TV/category discovery, dashboard summaries, category records, CSV exports, or read-only raw Dashboard API GET/HEAD requests. Use for FeedMob Pixel Dashboard API work where valid values must be discovered first and tokens must not be exposed.
 ---
 
 # FeedMob Pixel CLI
@@ -11,22 +11,32 @@ Use the installed `fpc` command as the safe read-only interface to the FeedMob P
 
 For command details and less-common options, read [references/cli-reference.md](references/cli-reference.md).
 
+## Compatibility
+
+This skill is agent-neutral. Claude Code, Codex, and other Agent Skills-compatible runtimes should use this `SKILL.md` plus the linked `references/` files. The `agents/openai.yaml` file is optional UI metadata for OpenAI/Codex surfaces; Claude Code can ignore it.
+
 ## Start
 
-Verify the command and setup first:
+Verify the command first:
 
 ```bash
 command -v fpc
-fpc doctor
 ```
 
-If `fpc` is missing on this machine, install it from the local CLI repo:
+If `fpc` is missing on this machine, recommend the npm package install:
 
 ```bash
-cd /Users/steven/Workspace/feedmob-ai/feedmob-pixel-cli
-pnpm install
-pnpm build
-npm install -g .
+npm install -g @feedmob/feedmob-pixel-cli
+command -v fpc
+fpc --version
+```
+
+If npm only prints `added packages`, continue with `fpc --help` or `fpc doctor`.
+
+Then check setup:
+
+```bash
+fpc doctor
 ```
 
 If `doctor` reports missing setup, ask the user to provide a Dashboard API token through a local environment variable or private env file:
