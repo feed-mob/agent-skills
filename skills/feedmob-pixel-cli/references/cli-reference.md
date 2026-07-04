@@ -137,7 +137,9 @@ Summary-specific options:
 
 ## Date Modes
 
-Use `--registration-date-mode auto` when the user wants the Dashboard's linked date behavior: pass impression dates and let the backend derive the registration date window.
+Use one date axis per command.
+
+Use `--registration-date-mode auto` when the user explicitly provides impression dates and does not provide registration dates. Pass only impression dates and let the backend derive the registration date window.
 
 ```bash
 fpc summary get \
@@ -149,9 +151,7 @@ fpc summary get \
   --impression-end 2026-06-30
 ```
 
-Use `--registration-date-mode manual` whenever passing `--registration-start` or `--registration-end`. Manual mode decouples impression dates from registration dates. Do not pass `false`; `fpc` supports `auto` and `manual`.
-
-Registration-only range, with no impression-date filter:
+Use `--registration-date-mode manual` whenever the user explicitly provides registration dates. Pass only registration dates; omit impression dates entirely. Registration dates take precedence if both date types appear in the request. Do not pass `false`; `fpc` supports `auto` and `manual`.
 
 ```bash
 fpc summary get \
@@ -163,21 +163,7 @@ fpc summary get \
   --registration-end 2026-06-30
 ```
 
-Independent impression and registration ranges:
-
-```bash
-fpc summary get \
-  --advertiser chime \
-  --event-type registration \
-  --tv lg-tv \
-  --registration-date-mode manual \
-  --impression-start 2026-06-01 \
-  --impression-end 2026-06-30 \
-  --registration-start 2026-06-01 \
-  --registration-end 2026-06-30
-```
-
-Use `--date-filter-mode or` only with manual mode.
+Do not combine `--impression-start/--impression-end` with `--registration-start/--registration-end` in normal agent workflows. Do not use `--date-filter-mode` unless the user explicitly asks for a low-level API experiment.
 
 CLI flag to API query mapping:
 
@@ -236,7 +222,9 @@ fpc summary get \
   --impression-end 2026-06-30
 ```
 
-The summary JSON includes dashboard totals, category counts, `attributionWindow`, and an `attributed` object. `attributed.records` contains attributed registration records from categories whose summary `assistedCount` is greater than zero.
+The summary JSON includes dashboard totals, category counts, `attributionWindow`, and an `attributed` object. `attributed.total` is the dashboard's Direct CTV attributed registration count: the sum of Direct CTV category counts such as `Direct - LG CTV` and `Direct - TCL CTV`. `attributed.records` contains records fetched from those Direct CTV categories.
+
+Do not infer attributed categories from `assistedCount > 0`. `fpc` treats categories as Direct CTV when the slug matches `direct-*-ctv` or the name matches patterns like `Direct - LG CTV`. `assistedTotal` and `totalRegistrations` remain separate dashboard figures for assisted registrations and total registrations.
 
 If `--max-attribution-hours` is omitted, `fpc` uses a 14-day attribution window (`336` hours). Explicit `--max-attribution-hours` values are reflected in `attributionWindow`.
 
